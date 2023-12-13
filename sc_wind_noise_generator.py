@@ -37,6 +37,7 @@ import matplotlib.pyplot as plt
 import spectrum
 import soundfile as sf
 import sounddevice as sd
+import threading
 
 class WindNoiseGenerator:
     """Wind Noise Generator Class"""
@@ -53,6 +54,53 @@ class WindNoiseGenerator:
         self.short_term_var = short_term_var
         if start_seed is not None:
             np.random.seed(start_seed)
+
+    def start_live_playback(self, chunk_duration=0.1):
+        """Starts live wind noise generation and playback."""
+        self.chunk_samples = int(self.fs * chunk_duration)
+        self.running = True
+        playback_thread = threading.Thread(target=self._live_playback_loop)
+        playback_thread.start()
+
+    def stop_live_playback(self):
+        """Stops the live wind noise generation and playback."""
+        self.running = False
+
+    def _live_playback_loop(self):
+        """The loop that generates and plays wind noise in real-time."""
+        while self.running:
+            # Generate a small chunk of wind noise
+            wind_profile_chunk = self._generate_wind_speed_profile_chunk(self.chunk_samples)
+            exc = self.generate_excitation_signal(wind_profile_chunk)
+            exc_filtered = self._filter(exc, wind_profile_chunk, 2048)
+            exc_filtered = 0.95 * exc_filtered / max(np.abs(exc_filtered))
+
+            # Play the generated chunk
+            sd.play(exc_filtered, self.fs)
+            sd.wait()  # Wait for the chunk to finish playing
+
+    def _generate_wind_speed_profile_chunk(self, chunk_size):
+        """Generate a chunk of the wind speed profile for real-time playback."""
+
+        # Base wind speed, adjust as necessary
+        base_speed = 5  # Example base speed, can be adjusted
+
+        # Generate fluctuations based on gustiness
+        fluctuations = self.gustiness * np.random.randn(chunk_size)
+
+        # Smooth the fluctuations
+        hann_window_size = int(self.fs * 50e-3)  # 50 ms Hanning window
+        hann_window = np.hanning(hann_window_size)
+        hann_window /= np.sum(hann_window)
+        smooth_fluctuations = sp.signal.lfilter(hann_window, 1, fluctuations)
+
+        # Create the wind speed profile chunk
+        wind_speed_profile_chunk = base_speed + smooth_fluctuations
+
+        # Clip the wind speed to a reasonable range (adjust as needed)
+        wind_speed_profile_chunk = np.clip(wind_speed_profile_chunk, 2, 18)
+
+        return wind_speed_profile_chunk
 
     def generate_wind_noise(self):
         """Generate single-channel wind noise by filtering excitation signal"""
