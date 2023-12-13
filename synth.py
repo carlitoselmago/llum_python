@@ -2,31 +2,47 @@ import numpy as np
 import sounddevice as sd
 from scipy.signal import butter, filtfilt
 
-def generate_wind_chunk(chunk_length, sample_rate, seed):
+def generate_sine_wave(frames, sample_rate, freq):
+    t = np.arange(frames) / sample_rate
+    return 0.1 * np.sin(2 * np.pi * freq * t)  # Amplitude of sine wave set to 0.1
+
+def generate_wind_chunk(frames, sample_rate, seed, last_chunk_end):
     np.random.seed(seed)
     # Generate white noise for the chunk
-    noise = np.random.normal(0, 1, int(sample_rate * chunk_length))
+    noise = np.random.normal(0, 1, frames)
+
+    # Generate a sine wave with varying frequency for the whistling effect
+    freq = np.linspace(300, 600, frames)  # Frequency varies between 300 to 600 Hz
+    sine_wave = generate_sine_wave(frames, sample_rate, freq)
+
+    # Combine the sine wave with noise
+    combined_signal = noise + sine_wave
 
     # Design a filter to mimic wind characteristics
-    b, a = butter(N=1, Wn=0.1, btype='low')
-    wind_chunk = filtfilt(b, a, noise)
+    b, a = butter(N=2, Wn=0.05, btype='low')
+    wind_chunk = filtfilt(b, a, combined_signal)
 
-    # Normalize to float32 range
-    wind_chunk_normalized = np.float32(wind_chunk / np.max(np.abs(wind_chunk)))
+    # Blend with the end of the previous chunk for smooth transition
+    if last_chunk_end is not None:
+        wind_chunk[:1000] = (wind_chunk[:1000] + last_chunk_end) / 2
 
-    return wind_chunk_normalized
+    # Normalize to float32 range and reduce volume
+    wind_chunk_normalized = np.float32(wind_chunk / np.max(np.abs(wind_chunk)) * 0.5)
+
+    return wind_chunk_normalized, wind_chunk[-1000:]
+
+last_chunk_end = None
 
 def callback(outdata, frames, time, status):
-    global seed
+    global seed, last_chunk_end
     if status:
         print(status, file=sys.stderr)
-    chunk = generate_wind_chunk(chunk_length, sample_rate, seed)
+    chunk, last_chunk_end = generate_wind_chunk(frames, sample_rate, seed, last_chunk_end)
     outdata[:] = chunk.reshape(-1, 1)
     seed += 1  # Update seed for the next chunk
 
 # Parameters
-chunk_length = 0.5  # seconds for each chunk
-sample_rate = 44100  # Hz
+sample_rate = 244100  # Hz
 seed = 123  # Custom seed
 
 # Stream setup

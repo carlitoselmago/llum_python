@@ -1,2 +1,4 @@
 python-osc 
 matplotlib
+numpy
+sounddevice
