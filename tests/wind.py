@@ -1,6 +1,6 @@
 #https://github.com/audiolabs/SC-Wind-Noise-Generator/blob/main/sc_wind_noise_generator.py
 import numpy as np
-from sc_wind_noise_generator import WindNoiseGenerator as wng
+from tests.sc_wind_noise_generator import WindNoiseGenerator as wng
 import sounddevice as sd
 import threading
 import time
