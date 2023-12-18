@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+DMX_llum_autosave/
 
 # C extensions
 *.so
