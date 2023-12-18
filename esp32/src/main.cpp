@@ -15,6 +15,7 @@
 Adafruit_MPU6050 mpu;
 
 //Wifi configuration
+/*
 const char *ssid = "HANGAR_lab";
 const char *password = "mordorlab";
 
@@ -23,9 +24,9 @@ IPAddress gateway(192, 168, 30, 1);
 IPAddress subnet(255, 255, 255, 0);
 // for ArduinoOSC
 const char* host_ip = "192.168.30.255";
+*/
 
 
-/*
 const char *ssid = "( o )( o )";
 const char *password = "todojuntoyenminusculas";
 
@@ -33,7 +34,7 @@ IPAddress ip(192, 168, 1, 200 + readId);
 IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
 const char* host_ip = "192.168.1.139";
-*/
+
 
 void setup(void) {
   Serial.begin(115200);
