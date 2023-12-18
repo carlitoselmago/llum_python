@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 DMX_llum_autosave/
+*backup.noisette
+*recovered.noisette
+crashlog.txt
+crashlog.dmp
 
 # C extensions
 *.so

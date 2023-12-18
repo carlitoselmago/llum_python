@@ -15,8 +15,8 @@ from pyo import *
 import time
 import random
 
-s = Server(sr=44100, buffersize=4056,nchnls=2)
-s.setInOutDevice(13)
+s = Server(sr=44100, buffersize=4056)
+#s.setInOutDevice(10)
 s.boot()
 
 pa_list_devices()
@@ -42,7 +42,9 @@ s.start()
 # Function to handle incoming OSC messages on /board0
 def handle_board0(unused_addr, *args):
     global values
-    if len(args) == 1 and all(isinstance(arg, float) for arg in args):
+    print(args)
+    
+    if len(args) == 4 and all(isinstance(arg, float) for arg in args):
         values = list(args)
         #print(f"Received values: {values}")
     else:
