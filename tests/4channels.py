@@ -3,6 +3,7 @@ from pythonosc import dispatcher, osc_server
 import threading
 
 # Global variables
+board="/board4"
 values = [0.0, 0.0, 0.0,0.0]
 running = True
 
@@ -17,7 +18,7 @@ def handle_board0(unused_addr, *args):
 
 # Setting up the OSC server
 dispatcher = dispatcher.Dispatcher()
-dispatcher.map("/board0", handle_board0)
+dispatcher.map(board, handle_board0)
 
 server = osc_server.ThreadingOSCUDPServer(("0.0.0.0", 54321), dispatcher)
 print("Serving on {}".format(server.server_address))
