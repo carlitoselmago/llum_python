@@ -3,9 +3,11 @@ from pythonosc import dispatcher, osc_server
 import threading
 
 # Global variables
-board="/board4"
+board="/board0"
 values = [0.0, 0.0, 0.0,0.0]
 running = True
+
+
 
 # Function to handle incoming OSC messages on /board0
 def handle_board0(unused_addr, *args):
@@ -21,7 +23,7 @@ dispatcher = dispatcher.Dispatcher()
 dispatcher.map(board, handle_board0)
 
 server = osc_server.ThreadingOSCUDPServer(("0.0.0.0", 54321), dispatcher)
-print("Serving on {}".format(server.server_address))
+print("Serving on {}".format(server.server_address),board)
 
 # Function to update the plot
 def live_plotter():
@@ -41,7 +43,7 @@ def live_plotter():
     while running:
         plt.pause(0.1)
         ax.clear()
-        ax.bar(['Value1', 'Value2', 'Value3','Value4'], values)
+        ax.bar(['Value0', 'Value1', 'Value2','Value3'], values)
         ax.set_ylim([-100, 100])  # Maintain y-axis limits after clearing the axes
         plt.draw()
 
