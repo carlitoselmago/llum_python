@@ -8,7 +8,7 @@
 #include "Adafruit_MAX1704X.h"
 #include "Adafruit_LC709203F.h"
 
-#define readId 9 //ID
+#define readId 7   //ID
 #define resolution 0.0005//0.05//0.0005
 
 #if readId==0
@@ -70,14 +70,24 @@ IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
 const char* host_ip = "192.168.1.139";
 */
+/*
 //Wifi configuration
 const char *ssid = "HANGAR_residents";
 const char *password = "residentsQjFXlm4X";
 
 IPAddress ip(172, 25, 0, 200 + readId);
 IPAddress gateway(172, 25, 0, 1);
-IPAddress subnet(255, 255, 255, 0);
+IPAddress subnet(255, 255, 248, 0);
 const char* host_ip = "172.25.0.250";
+*/
+//Wifi configuration
+const char *ssid = "MANGO";
+const char *password = "remotamente";
+
+IPAddress ip(192, 168, 4, 200 + readId);
+IPAddress gateway(192, 168, 4, 1);
+IPAddress subnet(255, 255, 255, 0);
+const char* host_ip = "192.168.4.100";
 
 void setup(void) {
   Serial.begin(115200);

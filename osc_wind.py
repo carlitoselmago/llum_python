@@ -4,6 +4,8 @@ import threading
 import numpy as np
 from time import sleep
 
+board=1
+
 def interpolate(start, end, steps):
     return np.linspace(start, end, steps)
 
@@ -28,7 +30,7 @@ import time
 import random
 
 s = Server(sr=44100, buffersize=4056)
-s.setInOutDevice(12) 
+#s.setInOutDevice(12) 
 s.boot()
 
 sleep(5)
@@ -66,7 +68,7 @@ def handle_board0(unused_addr, *args):
 
 # Setting up the OSC server
 dispatcher = dispatcher.Dispatcher()
-dispatcher.map("/board0", handle_board0)
+dispatcher.map("/board"+str(board), handle_board0)
 
 server = osc_server.ThreadingOSCUDPServer(("0.0.0.0", 54322), dispatcher)
 print("Serving on {}".format(server.server_address))
