@@ -84,8 +84,8 @@ const char* host_ip = "172.25.0.250";
 const char *ssid = "MANGO";
 const char *password = "remotamente";
 
-IPAddress ip(192, 168, 4, 200 + readId);
-IPAddress gateway(192, 168, 4, 1);
+IPAddress ip(192, 168, 5, 200 + readId);
+IPAddress gateway(192, 168, 5, 1);
 IPAddress subnet(255, 255, 255, 0);
 const char* host_ip = "192.168.4.100";
 
