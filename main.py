@@ -6,7 +6,7 @@ from lib.dmx_osc import dmx_osc
 
 # Sensors
 sensors = [
-    {"type":"static","id":7},
+   {"type":"static","id":7},
     {"type":"dinamic","id":0}
 ]
 
@@ -19,12 +19,8 @@ fixtures={
 # pairs of sensors and fixtures, the key = sensor
 pairs={
     
-    7:[{"fixture":0,"range":[220,255]},
-    
-       ],
-    0:[{"fixture":0,"range":[255,0]},
-       
-       ],
+    7:[{"fixture":1,"range":[200,255]}],
+    0:[{"fixture":0,"range":[255,0]} ],
     
 }
 
