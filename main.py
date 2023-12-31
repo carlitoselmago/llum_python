@@ -12,15 +12,19 @@ sensors = [
 
 #fixtures, key is an unrealted to fixtures or sensors ids, its just for pairs targeting
 fixtures={
-    #0:{"channels":[7]}, #test
-    1:{"channels":[8]}
+    0:{"channels":[10]},
+    1:{"channels":[7]}
 }
 
 # pairs of sensors and fixtures, the key = sensor
 pairs={
     
-    7:[{"fixture":1,"range":[100,255]}],
-    0:[{"fixture":1,"range":[255,0]}],
+    7:[{"fixture":0,"range":[220,255]},
+    
+       ],
+    0:[{"fixture":0,"range":[255,0]},
+       
+       ],
     
 }
 
