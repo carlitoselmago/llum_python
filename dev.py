@@ -2,7 +2,7 @@ from pythonosc import dispatcher, osc_server
 from pyDMXController import pyDMXController
 import threading
 
-from lib.dmx_osc import dmx_osc
+from classes.dmx_osc import dmx_osc
 
 # Sensors
 sensors = [
