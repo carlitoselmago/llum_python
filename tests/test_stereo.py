@@ -6,7 +6,7 @@ s = Server(sr=44100, buffersize=4056)
 sleep(5)
 pa_list_devices()
 # Set the input/output device to device number 12
-s.setInOutDevice(3)
+s.setInOutDevice(4)
 
 # Boot the server
 s.boot()
