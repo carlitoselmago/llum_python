@@ -10,7 +10,7 @@ class dmx_osc:
 
     oscport = 54321
     rangetime=15 #iterations it takes to define the margin of static sensors
-    dmxspeed=0.00000001 #speed in seconds for the dmx loop (the lower the faster)
+    dmxspeed=0.00001 #speed in seconds for the dmx loop (the lower the faster)
     movement_threshold=0 # value difference for dinamic sensors
 
 
