@@ -19,7 +19,7 @@ fixtures={
 # pairs of sensors and fixtures, the key = sensor
 pairs={
     
-    7:[{"fixture":1,"range":[150,255]}],
+    7:[{"fixture":1,"range":[200,255]}],
     0:[{"fixture":1,"range":[255,0]} ],
     
 }
