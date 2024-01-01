@@ -1,7 +1,7 @@
 from pyo import *
 
 # Initialize Pyo server
-s = Server(sr=44100, buffersize=4056)
+s = Server(sr=44100, buffersize=4056,audio = "jack")
 pa_list_devices()
 # Set the input/output device to device number 12
 s.setInOutDevice(1)
