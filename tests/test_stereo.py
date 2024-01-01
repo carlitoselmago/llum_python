@@ -2,11 +2,11 @@ from pyo import *
 from time import sleep
 
 # Initialize Pyo server
-s = Server(sr=44100, buffersize=4056)
+s = Server(sr=44100, buffersize=4056,audio = "jack")
 sleep(5)
 pa_list_devices()
 # Set the input/output device to device number 12
-s.setInOutDevice(1)
+s.setInOutDevice(0)
 
 # Boot the server
 s.boot()
