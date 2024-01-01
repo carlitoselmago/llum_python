@@ -4,7 +4,7 @@ from pyo import *
 s = Server(sr=44100, buffersize=4056)
 
 # Set the input/output device to device number 12
-s.setInOutDevice(12)
+#s.setInOutDevice(12)
 
 # Boot the server
 s.boot()
