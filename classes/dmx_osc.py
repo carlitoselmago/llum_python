@@ -10,7 +10,7 @@ class dmx_osc:
 
     oscport = 54321
     rangetime=15 #iterations it takes to define the margin of static sensors
-    dmxspeed=0.001 #speed in seconds for the dmx loop (the lower the faster)
+    dmxspeed=0.00000001 #speed in seconds for the dmx loop (the lower the faster)
     movement_threshold=0 # value difference for dinamic sensors
 
 
@@ -21,7 +21,7 @@ class dmx_osc:
     pairs={}
 
     dmxport=""
-    margin_padding=0.2
+    margin_padding=0.1
 
     osc_channel=2
 
@@ -52,7 +52,6 @@ class dmx_osc:
 
         self.startOSC()
 
-        
         dmx_thread = threading.Thread(target=self.sendDMXLoop)
         dmx_thread.start()
 
@@ -117,7 +116,6 @@ class dmx_osc:
         if sensorid in self.margins:
             #static sensors
             if self.margins[sensorid]["tested"]<self.rangetime:
-                #print("defining limits of sensor",sensorid)
                 if value<self.margins[sensorid]["min"]:
                     self.margins[sensorid]["min"]=value
                 if value>self.margins[sensorid]["max"]:
@@ -137,17 +135,6 @@ class dmx_osc:
                         pvalue=self.scale_single_value(value,self.margins[sensorid]["min"],self.margins[sensorid]["max"],dmxrange[0],dmxrange[1])
                         pvalue=abs(255-pvalue)
                         self.sensor_val[sensorid]=pvalue
-                        """
-                        if pair["fixture"] in self.fixtures:
-                            for chan in self.fixtures[pair["fixture"]]["channels"]:
-                                
-                                final_value=abs(255-pvalue)
-                                #print(final_value)
-                                self.dmxdata[chan]=255-final_value#self.lerp(self.dmxdata[chan],pvalue,0.8)
-                                #print(self.dmxdata[chan])
-                                #print(self.dmxdata[chan])
-                        """     
-                             
                         
         else:
             # Dynamic sensors
@@ -163,25 +150,8 @@ class dmx_osc:
                         if len(self.sensor_last_vals[sensorid])>self.sensor_last_amount:
                             self.sensor_last_vals[sensorid].pop(0)
                         self.sensor_val[sensorid]=pvalue
-                        #print(self.sensor_last_vals[sensorid])
-                        """
-                        if sensorid in self.sensor_last:
-                            if (pvalue + self.sensor_last[sensorid]['value']) > self.movement_threshold:
-                                time_elapsed = current_time - self.sensor_last[sensorid]['time']
-                                decay_amount = self.decay_rate#self.decay_rate * time_elapsed  # Decay depends on elapsed time
-                                pvalue = max(pvalue - decay_amount, 0)  # Ensure pvalue doesn't go below 0
-                                print(pvalue, "decay", decay_amount)
-
-                                final_value = self.scale_single_value(pvalue, 0, 10, dmxrange[0], dmxrange[1])
-                                self.dmxdata[chan] = final_value
-                            else:
-                                # Handle cases where there's not enough movement
-                                pass
-                        self.sensor_last[sensorid] = {'value': pvalue, 'time': current_time}
-                        """
-                            
-           
-
+        #time.sleep(0.001)
+                       
     def sendDMXLoop(self):
 
         self.dmx.update_channel(6,255) ### THIS IS ONLY FOR LOCAL TEST
@@ -195,28 +165,16 @@ class dmx_osc:
                     if sensor["sensorid"] in self.sensor_val:
                         if sensor["type"] == "dinamic":
                             smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]]))
-                            #smooth_value=self.sensor_val[sensor["sensorid"]]
-                            #if self.sensor_val[sensor["sensorid"]]<self.sensor_last_val[sensor["sensorid"]]:
-                            #    smooth_value=self.sensor_last_val[sensor["sensorid"]]-0.1
-                            # Exponential smoothing
-                            #smooth_value = alpha * self.sensor_val[sensor["sensorid"]] + (1 - alpha) * self.sensor_last_val[sensor["sensorid"]]
-                            #print(smooth_value, value, self.sensor_val[sensor["sensorid"]], self.sensor_last_val[sensor["sensorid"]])
-                            #value -= smooth_value
                             value-= smooth_value
                             
                         else:
                             value -= self.sensor_val[sensor["sensorid"]]
                 self.dmxdata[chan]=value
                 self.dmx.update_channel(chan, max(min(int(value), 255), 0))
-            """
-
-            for chan in self.dmxdata:
-                self.dmx.update_channel(chan, max(min(int(self.dmxdata[chan]),255),0) )
-                #if chan==8:
-                #    print(int(self.dmxdata[chan]))
+      
+                
             self.dmx.run(self.dmxspeed)
-            """
-            self.dmx.run(self.dmxspeed)
+            #time.sleep(0.001)
 
     def putDatainChain(self):
         pass
@@ -229,32 +187,12 @@ class dmx_osc:
                 return sensor["type"]
             
     def lerp(self,start, end, t):
-        """
-        Linear interpolation between start and end.
-        t: interpolation factor (0.0 to 1.0)
-        """
         return start + t * (end - start)
             
     def ease_in_quad(self,start, end, t):
-        """
-        Quadratic easing in: accelerating from zero velocity.
-        """
         return start + (end - start) * t * t
     
     def scale_single_value(self,value, old_min, old_max, new_min, new_max):
-        """
-        Scale a single float value from one range to another, allowing for inverted scales.
-
-        Parameters:
-        value (float): The float value to be scaled.
-        old_min (float): The minimum value of the original range.
-        old_max (float): The maximum value of the original range.
-        new_min (float): The minimum value of the new range.
-        new_max (float): The maximum value of the new range.
-
-        Returns:
-        float: The scaled value.
-        """
         # Handle special case where the old range or new range is zero
         if old_max == old_min:
             return new_min

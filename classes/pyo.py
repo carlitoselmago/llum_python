@@ -16,11 +16,12 @@ class Sound:
 
     def start(self):
         s = Server(sr=44100, buffersize=4056)
-        s.setVerbosity(0)
+        sleep(5)
+        pa_list_devices()
         s.setInOutDevice(self.audiodeviceindex)  # Make sure this device supports stereo
         s.boot()
         
-        sleep(5)
+        
         s.start()
         #pa_list_devices()
 
