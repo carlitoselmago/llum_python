@@ -19,11 +19,10 @@ fixtures={
 # pairs of sensors and fixtures, the key = sensor
 pairs={
     
-    7:[{"fixture":1,"range":[200,255]}],
-    0:[{"fixture":0,"range":[255,0]} ],
+    7:[{"fixture":1,"range":[150,255]}],
+    0:[{"fixture":1,"range":[255,0]} ],
     
 }
-
 DMXOSC=dmx_osc(oscport=54321,
                dmxport='/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A50285BI-if00-port0',
                device_type='ftdi',
