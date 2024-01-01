@@ -22,7 +22,7 @@ class Sound:
         
         sleep(5)
         s.start()
-        #pa_list_devices()
+        pa_list_devices()
 
         #pitches = [midiToHz(m) for m in [36, 43, 48, 55, 60, 62, 64, 65, 67, 69, 71, 72]]
 
