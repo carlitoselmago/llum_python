@@ -54,7 +54,7 @@ class dmx_osc:
 
         dmx_thread = threading.Thread(target=self.sendDMXLoop)
         dmx_thread.start()
-        if sound_enabled:
+        if self.sound_enabled:
             self.Sound=Sound(self,audiodeviceindex)
             sound_thread = threading.Thread(target=self.Sound.start)
             sound_thread.start()
