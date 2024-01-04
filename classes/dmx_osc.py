@@ -12,7 +12,7 @@ class dmx_osc:
     rangetime=15 #iterations it takes to define the margin of static sensors
     dmxspeed=0.00001 #speed in seconds for the dmx loop (the lower the faster)
     movement_threshold=0 # value difference for dinamic sensors
-
+    sound_enabled=False
 
     ###################
 
@@ -54,10 +54,10 @@ class dmx_osc:
 
         dmx_thread = threading.Thread(target=self.sendDMXLoop)
         dmx_thread.start()
-
-        self.Sound=Sound(self,audiodeviceindex)
-        sound_thread = threading.Thread(target=self.Sound.start)
-        sound_thread.start()
+        if sound_enabled:
+            self.Sound=Sound(self,audiodeviceindex)
+            sound_thread = threading.Thread(target=self.Sound.start)
+            sound_thread.start()
 
     def prepareData(self):
         for s in self.sensors:
