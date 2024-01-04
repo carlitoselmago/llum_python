@@ -2,12 +2,26 @@ import matplotlib.pyplot as plt
 from pythonosc import dispatcher, osc_server
 import threading
 import numpy as np
+from time import sleep
+
+board=1
 
 def interpolate(start, end, steps):
     return np.linspace(start, end, steps)
 
+def scale(val, src, dst):
+    """
+    Scale the given value from the scale of src to the scale of dst.
+    """
+    value= ((val - src[0]) / (src[1]-src[0])) * (dst[1]-dst[0]) + dst[0]
+    if value<dst[0]:
+        value=dst[0]
+    if value>dst[1]:
+        value=dst[1]
+    return value
+
 # Global variables
-values = [0.0]
+values = [0.0,0,0]
 running = True
 
 #synth
@@ -20,6 +34,8 @@ import random
 s=Server(sr=44100, nchnls=2, buffersize=4056, duplex=1, audio='jack', jackname='pyo')
 s.setInOutDevice(2)
 s.boot()
+
+sleep(5)
 
 pa_list_devices()
 
@@ -44,7 +60,9 @@ s.start()
 # Function to handle incoming OSC messages on /board0
 def handle_board0(unused_addr, *args):
     global values
-    if len(args) == 1 and all(isinstance(arg, float) for arg in args):
+    #print(args)
+    
+    if len(args) == 4 and all(isinstance(arg, float) for arg in args):
         values = list(args)
         #print(f"Received values: {values}")
     else:
@@ -52,9 +70,9 @@ def handle_board0(unused_addr, *args):
 
 # Setting up the OSC server
 dispatcher = dispatcher.Dispatcher()
-dispatcher.map("/board0", handle_board0)
+dispatcher.map("/board"+str(board), handle_board0)
 
-server = osc_server.ThreadingOSCUDPServer(("0.0.0.0", 54321), dispatcher)
+server = osc_server.ThreadingOSCUDPServer(("0.0.0.0", 54322), dispatcher)
 print("Serving on {}".format(server.server_address))
 
 # Function to update the plot
@@ -73,21 +91,27 @@ def live_plotter():
     fig.canvas.mpl_connect('close_event', on_close)
 
     current_freq = 500  # Starting frequency
-    rate_of_change = 5  # Change in frequency per iteration
+    rate_of_change = 1  # Change in frequency per iteration
 
     while running:
         
         #synth modification :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         """
         target_freq = values[0] * 200 + 500
+        sensorIndex=2
+        target_freq=scale(values[sensorIndex], (-30, 25.0), (500, 2000))+100
+        #target_freq =(values[sensorIndex]+100) * 20
+        print(values[sensorIndex],target_freq)
         # Update current_freq towards target_freq in small steps
+        """
         if current_freq < target_freq:
             current_freq = min(current_freq + rate_of_change, target_freq)
         elif current_freq > target_freq:
             current_freq = max(current_freq - rate_of_change, target_freq)
         """
         filt.freq = current_freq  # Update the filter frequency
-
+        """
+        filt.freq=target_freq
         #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
