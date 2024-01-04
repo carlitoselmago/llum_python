@@ -12,7 +12,6 @@ class Sound:
         self.audiodeviceindex=audiodeviceindex
         pass
 
-        
 
     def start(self):
         s = Server(audio="jack")#Server(sr=44100, buffersize=4056)
