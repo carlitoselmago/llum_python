@@ -15,8 +15,10 @@ from pyo import *
 import time
 import random
 
-s = Server(sr=44100, buffersize=4056,nchnls=2)
-s.setInOutDevice(13)
+#s = Server(sr=44100, buffersize=4056,nchnls=2)
+#s.setInOutDevice(13)
+s=Server(sr=44100, nchnls=2, buffersize=4056, duplex=1, audio='jack', jackname='pyo')
+s.setInOutDevice(2)
 s.boot()
 
 pa_list_devices()
@@ -76,14 +78,14 @@ def live_plotter():
     while running:
         
         #synth modification :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        
+        """
         target_freq = values[0] * 200 + 500
         # Update current_freq towards target_freq in small steps
         if current_freq < target_freq:
             current_freq = min(current_freq + rate_of_change, target_freq)
         elif current_freq > target_freq:
             current_freq = max(current_freq - rate_of_change, target_freq)
-
+        """
         filt.freq = current_freq  # Update the filter frequency
 
         #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
