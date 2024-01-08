@@ -10,9 +10,9 @@ class dmx_osc:
 
     oscport = 54321
     rangetime=15 #iterations it takes to define the margin of static sensors
-    dmxspeed=0.00001 #speed in seconds for the dmx loop (the lower the faster)
+    dmxspeed=0.0001 #speed in seconds for the dmx loop (the lower the faster)
     movement_threshold=0 # value difference for dinamic sensors
-    sound_enabled=False
+    sound_enabled=True
 
     ###################
 
@@ -79,8 +79,8 @@ class dmx_osc:
                     self.sensor_val[sensorid]=255
                     self.sensor_last_vals[sensorid]=[255]*self.sensor_last_amount
         
-        print("CREATED dmxchannel_data_chain (DMXchannel-> order of sensors): ")
-        print(self.dmxchannel_data_chain)
+        #print("CREATED dmxchannel_data_chain (DMXchannel-> order of sensors): ")
+        #print(self.dmxchannel_data_chain)
         print("")
         
 
@@ -91,7 +91,8 @@ class dmx_osc:
             disp.map("/board" + str(s["id"]), self.senseLoop)
 
         # Setting up the OSC server
-        server = osc_server.ThreadingOSCUDPServer(("0.0.0.0", self.oscport), disp)
+        server = osc_server.ThreadingOSCUDPServer(("172.25.7.255", self.oscport), disp)
+        #server = osc_server.ThreadingOSCUDPServer(("0.0.0.0", self.oscport), disp)
         print("Serving on {}".format(server.server_address))
 
         # Function to run the server
@@ -145,7 +146,8 @@ class dmx_osc:
                     for chan in self.fixtures[pair["fixture"]]["channels"]:
                         #print(value)
                         pvalue = abs(value)  # in a range from 0 to 50 approx
-                        pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
+                        #pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
+                        pvalue=self.scale_single_value(abs(pvalue), 0, 50, dmxrange[1], dmxrange[0])
                         self.sensor_last_vals[sensorid].append(self.sensor_val[sensorid])
                         if len(self.sensor_last_vals[sensorid])>self.sensor_last_amount:
                             self.sensor_last_vals[sensorid].pop(0)
@@ -154,7 +156,7 @@ class dmx_osc:
                        
     def sendDMXLoop(self):
 
-        self.dmx.update_channel(6,255) ### THIS IS ONLY FOR LOCAL TEST
+        #self.dmx.update_channel(6,255) ### THIS IS ONLY FOR LOCAL TEST
 
         while True:
             for chan in self.dmxchannel_data_chain:

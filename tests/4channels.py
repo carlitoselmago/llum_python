@@ -22,7 +22,7 @@ def handle_board0(unused_addr, *args):
 dispatcher = dispatcher.Dispatcher()
 dispatcher.map(board, handle_board0)
 
-server = osc_server.ThreadingOSCUDPServer(("0.0.0.0", 54321), dispatcher)
+server = osc_server.ThreadingOSCUDPServer(("172.25.7.255", 54321), dispatcher)
 print("Serving on {}".format(server.server_address),board)
 
 # Function to update the plot
