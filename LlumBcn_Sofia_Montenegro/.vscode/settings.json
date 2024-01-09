@@ -1,3 +1,15 @@
 {
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "192.168.1.147",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "ubuntu",
+            "database": "users",
+            "username": "postgres",
+            "password": "carboo242"
+        }
+    ]
 }
