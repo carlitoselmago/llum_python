@@ -2,3 +2,5 @@ python-osc
 matplotlib
 numpy
 sounddevice
+git+https://github.com/carlitoselmago/pyDMXController
+pyo

@@ -29,8 +29,10 @@ from pyo import *
 import time
 import random
 
-s = Server(sr=44100, buffersize=4056)
-#s.setInOutDevice(12) 
+#s = Server(sr=44100, buffersize=4056,nchnls=2)
+#s.setInOutDevice(13)
+s=Server(sr=44100, nchnls=2, buffersize=4056, duplex=1, audio='jack', jackname='pyo')
+s.setInOutDevice(2)
 s.boot()
 
 sleep(5)
@@ -94,6 +96,8 @@ def live_plotter():
     while running:
         
         #synth modification :::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        """
+        target_freq = values[0] * 200 + 500
         sensorIndex=2
         target_freq=scale(values[sensorIndex], (-30, 25.0), (500, 2000))+100
         #target_freq =(values[sensorIndex]+100) * 20
@@ -104,7 +108,7 @@ def live_plotter():
             current_freq = min(current_freq + rate_of_change, target_freq)
         elif current_freq > target_freq:
             current_freq = max(current_freq - rate_of_change, target_freq)
-
+        """
         filt.freq = current_freq  # Update the filter frequency
         """
         filt.freq=target_freq
