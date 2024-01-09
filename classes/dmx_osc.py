@@ -3,8 +3,13 @@ from pyDMXController import pyDMXController
 from classes.pyo import Sound
 import numpy as np
 import threading
+from multiprocessing import Process, Queue, Value
+import ctypes
 import sys
 import time
+import random
+import logging
+logging.disable(logging.DEBUG)
 
 class dmx_osc:
 
@@ -33,10 +38,12 @@ class dmx_osc:
 
     dmxdata={}
     dmxchannel_data_chain={}
+    channeladjustments={}
 
 
-    def __init__(self,oscport=54321,rangetime=25,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={}):
+    def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={}):
         self.oscport=oscport
+        self.oscip=oscip
         self.rangetime=rangetime
         self.dmxport=dmxport
         self.device_type=device_type
@@ -46,29 +53,51 @@ class dmx_osc:
         self.fixtures=fixtures 
         self.pairs=pairs 
 
-        self.dmx = pyDMXController(port=self.dmxport, device_type=self.device_type)
+        if self.sound_enabled:
+            #self.Sound=Sound(self,audiodeviceindex)
+            #sound_thread = threading.Thread(target=self.Sound.start)
+            #sound_thread.start()
+            self.terminate_flag = Value(ctypes.c_bool, False)
+            self.sound_queue = Queue(maxsize=2)
+            self.Sound = Sound(self,self.sound_queue, self.terminate_flag,audiodeviceindex)
+            # Create a process for the sound task
+            self.sound_process =Process(target=self.Sound.start)
+            self.sound_process.start()
 
+        try:
+            self.dmx = pyDMXController(port=self.dmxport, device_type=self.device_type)
+        except Exception as e:
+            print(e)
+            self.dmx=False
         self.prepareData()
 
         self.startOSC()
 
         dmx_thread = threading.Thread(target=self.sendDMXLoop)
         dmx_thread.start()
-        if self.sound_enabled:
-            self.Sound=Sound(self,audiodeviceindex)
-            sound_thread = threading.Thread(target=self.Sound.start)
-            sound_thread.start()
+        
 
     def prepareData(self):
         for s in self.sensors:
             if s["type"]=="static":
                 self.margins[s["id"]]={"min":200.0,"max":-200.0,"tested":0}
         
+        #new fixture white balance
+        newWB=[0.34,0.69,0.58,0.27]
+
+        
+
         #prepare dmx array
         for id in self.fixtures:
-            for c in self.fixtures[id]["channels"]:
-                self.dmxdata[c]=255
-              
+            if self.fixtures[id]["type"]=="new":
+                for i,c in enumerate(self.fixtures[id]["channels"]):
+                    self.channeladjustments[c]=newWB[i]
+                    self.dmxdata[c]=255
+            else:
+                for c in self.fixtures[id]["channels"]:
+                    self.channeladjustments[c]=1.0
+                    self.dmxdata[c]=255
+
         for sensorid in self.pairs:
             pair=self.pairs[sensorid]
             for fixture in pair:
@@ -91,7 +120,7 @@ class dmx_osc:
             disp.map("/board" + str(s["id"]), self.senseLoop)
 
         # Setting up the OSC server
-        server = osc_server.ThreadingOSCUDPServer(("172.25.7.255", self.oscport), disp)
+        server = osc_server.ThreadingOSCUDPServer((self.oscip ,self.oscport), disp)
         #server = osc_server.ThreadingOSCUDPServer(("0.0.0.0", self.oscport), disp)
         print("Serving on {}".format(server.server_address))
 
@@ -144,7 +173,7 @@ class dmx_osc:
                     dmxrange = pair["range"]
                     current_time = time.time()
                     for chan in self.fixtures[pair["fixture"]]["channels"]:
-                        #print(value)
+                        
                         pvalue = abs(value)  # in a range from 0 to 50 approx
                         #pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
                         pvalue=self.scale_single_value(abs(pvalue), 0, 50, dmxrange[1], dmxrange[0])
@@ -171,16 +200,30 @@ class dmx_osc:
                             
                         else:
                             value -= self.sensor_val[sensor["sensorid"]]
+                #white balance adjustment
+                value=value*self.channeladjustments[chan]
                 self.dmxdata[chan]=value
-                self.dmx.update_channel(chan, max(min(int(value), 255), 0))
+                if self.dmx:
+                    self.dmx.update_channel(chan, max(min(int(value), 255), 0))
       
-                
-            self.dmx.run(self.dmxspeed)
+            if self.dmx:
+                self.dmx.run(self.dmxspeed)
+            try:
+                self.sound_queue.put(self.dmxdata[7])
+                #randomint=random.randint(3, 9)
+                #self.sound_queue.put(randomint)#self.dmxdata.dmxdata[10])
+                #print("randomint",randomint)
+            except Exception as e:
+                print(e)
             #time.sleep(0.001)
 
     def putDatainChain(self):
         pass
-
+    
+    def close(self):
+        self.terminate_flag.value = True
+        self.sound_process.join()
+    
     ## HELPER FUNCTIONS
 
     def getSensorType(self,sensorid):

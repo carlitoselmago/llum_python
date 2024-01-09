@@ -7,14 +7,16 @@ import sys
 
 class Sound:
 
-    def __init__(self,dmxosc,audiodeviceindex=0):
+    def __init__(self,dmxosc,queue, terminate_flag,audiodeviceindex=0):
+        self.queue = queue
+        self.terminate_flag = terminate_flag
         self.dmxosc=dmxosc
         self.audiodeviceindex=audiodeviceindex
         pass
 
 
     def start(self):
-        s = Server(audio="jack")#Server(sr=44100, buffersize=4056)
+        s = Server(audio="jack",sr=44100, buffersize=4056)#Server(sr=44100, buffersize=4056)
         sleep(5)
         pa_list_devices()
         s.setInOutDevice(self.audiodeviceindex)  # Make sure this device supports stereo
@@ -50,9 +52,13 @@ class Sound:
         # Output the mixed audio
         mixer.out()
 
-        while True:
-            filt.freq=self.dmxosc.scale_single_value(self.dmxosc.dmxdata[10],255,0,200,1800)
-            #lfo.freq=self.dmxosc.scale_single_value(self.dmxosc.dmxdata[10],255,0,0.1,2)
+        while not self.terminate_flag.value:
+            if not self.queue.empty():
+                dmx_data = self.queue.get()
+                #print(dmx_data)
+                filt.freq=self.dmxosc.scale_single_value(dmx_data,-50,50,400,1800)
+        #    filt.freq=self.dmxosc.scale_single_value(self.dmxosc.dmxdata[10],255,0,500,1800)
+        #    #lfo.freq=self.dmxosc.scale_single_value(self.dmxosc.dmxdata[10],255,0,0.1,2)
             pass
         print("ENDDDD")
         sys.exit()
