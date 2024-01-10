@@ -22,7 +22,7 @@ class Sound:
         s.setInOutDevice(self.audiodeviceindex)  # Make sure this device supports stereo
         s.boot()
         
-        
+        #synth part
         s.start()
         #pa_list_devices()
 
