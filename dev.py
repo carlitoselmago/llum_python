@@ -23,6 +23,10 @@ pairs={
     0:[{"fixture":1,"range":[255,0]} ],
     
 }
+#pairs of sensors and audio controllers, audio has 0,1,2,3 controllers as targets
+pairs_audio={
+    7:[{"control":0,"range":[0.1,1]}]
+}
 
 DMXOSC=dmx_osc(oscport=54321,
                oscip="localhost",
@@ -32,7 +36,8 @@ DMXOSC=dmx_osc(oscport=54321,
                audiodeviceindex=12,
                sensors=sensors,
                fixtures=fixtures,
-               pairs=pairs)
+               pairs=pairs
+               pairs_audio=pairs_audio)
 
 
 #################################################################################

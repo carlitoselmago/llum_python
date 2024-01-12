@@ -51,14 +51,27 @@ class Sound:
 
         # Output the mixed audio
         mixer.out()
+        
+        #############################################################################
+
+        #set controllers (4 of them)
+        controllers={
+            0:filt.freq,
+            1:lfo.mul,
+            2:lfo.add,
+            3:mixer.amp
+        }
 
         while not self.terminate_flag.value:
             if not self.queue.empty():
-                dmx_data = self.queue.get()
+                sensor_data=self.queue.get()
+                for index in sensor_data:
+                    sensor_val=sensor_data[index]
+                    controllers[index]=sensor_val
+                #dmx_data = self.queue.get()
                 #print(dmx_data)
-                filt.freq=self.dmxosc.scale_single_value(dmx_data,-50,50,400,1800)
-        #    filt.freq=self.dmxosc.scale_single_value(self.dmxosc.dmxdata[10],255,0,500,1800)
-        #    #lfo.freq=self.dmxosc.scale_single_value(self.dmxosc.dmxdata[10],255,0,0.1,2)
+                #filt.freq=self.dmxosc.scale_single_value(dmx_data,-50,50,400,1800)
+        
             pass
         print("ENDDDD")
         sys.exit()

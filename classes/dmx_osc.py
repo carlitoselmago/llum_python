@@ -40,8 +40,9 @@ class dmx_osc:
     dmxchannel_data_chain={}
     channeladjustments={}
 
+    sensors_audio_val={}
 
-    def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={}):
+    def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={},pairs_audio={}):
         self.oscport=oscport
         self.oscip=oscip
         self.rangetime=rangetime
@@ -52,6 +53,7 @@ class dmx_osc:
         self.sensors=sensors
         self.fixtures=fixtures 
         self.pairs=pairs 
+        self.pairs=pairs_audio
 
         if self.sound_enabled:
             #self.Sound=Sound(self,audiodeviceindex)
@@ -108,6 +110,11 @@ class dmx_osc:
                     self.sensor_val[sensorid]=255
                     self.sensor_last_vals[sensorid]=[255]*self.sensor_last_amount
         
+        for sensorid in self.pairs_audio:
+            pair=self.pairs_audio[sensorid]
+            for controller in pair:
+                XXXX
+
         #print("CREATED dmxchannel_data_chain (DMXchannel-> order of sensors): ")
         #print(self.dmxchannel_data_chain)
         print("")
@@ -209,10 +216,10 @@ class dmx_osc:
             if self.dmx:
                 self.dmx.run(self.dmxspeed)
             try:
-                self.sound_queue.put(self.dmxdata[7])
-                #randomint=random.randint(3, 9)
-                #self.sound_queue.put(randomint)#self.dmxdata.dmxdata[10])
-                #print("randomint",randomint)
+                self.sound_queue.put(self.sensors_audio_val)
+                
+                #self.sound_queue.put(self.dmxdata[7])
+               
             except Exception as e:
                 print(e)
             #time.sleep(0.001)
