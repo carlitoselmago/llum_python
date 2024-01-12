@@ -3,7 +3,9 @@ import random
 import time
 
 # Initialize Pyo server
-s = Server().boot()
+s = Server(audio="jack",sr=44100, buffersize=4056).boot()
+
+s.setInOutDevice(3)
 
 # Load audio files
 audio1 = SfPlayer('audio1.mp3', loop=True)

@@ -14,7 +14,7 @@ logging.disable(logging.DEBUG)
 class dmx_osc:
 
     oscport = 54321
-    rangetime=15 #iterations it takes to define the margin of static sensors
+    rangetime=5 #iterations it takes to define the margin of static sensors
     dmxspeed=0.0001 #speed in seconds for the dmx loop (the lower the faster)
     movement_threshold=0 # value difference for dinamic sensors
     sound_enabled=True
@@ -232,7 +232,7 @@ class dmx_osc:
                             #print("stattic value",sensor["sensorid"])
                             value -= self.sensor_val[sensor["sensorid"]]
                 #white balance adjustment
-                value=value*self.channeladjustments[chan]
+                #value=value*self.channeladjustments[chan]
                 self.dmxdata[chan]=value
                 if self.dmx:
                     #print(chan,value)

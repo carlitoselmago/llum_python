@@ -10,11 +10,11 @@ sensors = [
    {"type":"static","id":7},
     {"type":"static","id":8},
     {"type":"static","id":9},
-    {"type":"static","id":10},
+  #  {"type":"static","id":10},
     #dinamicos
     {"type":"dinamic","id":0},
     {"type":"dinamic","id":1},
-    {"type":"dinamic","id":2},
+    #{"type":"dinamic","id":2}, -> usado para sala pequeña
     {"type":"dinamic","id":3},
     {"type":"dinamic","id":4},
     {"type":"dinamic","id":5}
@@ -45,42 +45,58 @@ fixtures={
 
 # pairs of sensors and fixtures, the key = sensor
 pairs={
-    #passive
-    7:[
-    {"fixture":1,"range":[150,255]},
-    #{"fixture":2,"range":[150,255]},
-    {"fixture":3,"range":[150,255]},
-    #{"fixture":4,"range":[150,255]},
-    {"fixture":5,"range":[150,255]},
-    #{"fixture":6,"range":[150,255]},
-    {"fixture":7,"range":[150,255]},
-    {"fixture":8,"range":[150,255]},
-    {"fixture":9,"range":[150,255]},
-    {"fixture":10,"range":[150,255]},
-    {"fixture":11,"range":[150,255]},
-    {"fixture":12,"range":[150,255]},
-    {"fixture":13,"range":[150,255]},
-    {"fixture":14,"range":[150,255]}
-        ],
-    8:[
+    #passive ###################################3
+     7:[
         {"fixture":2,"range":[150,255]},
-         {"fixture":4,"range":[150,255]},
-        {"fixture":6,"range":[150,255]},
+        {"fixture":10,"range":[150,255]},
     ],
-    #direct  
-    0:[{"fixture":60,"range":[0,10]}],
-    1:[]
+     8:[
+        {"fixture":6,"range":[150,255]},
+         {"fixture":3,"range":[150,255]},
+    ],
+     9:[
+        {"fixture":4,"range":[150,255]},
+        {"fixture":11,"range":[150,255]},
+    ],
+    #10:[], #los de arriba
+   
+    #direct ####################################33
+   
+    #2:[],
+    3:[],
+    4:[
+         {"fixture":5,"range":[0,255]},
+         {"fixture":13,"range":[0,255]},
+    ],
+    5:[
+         {"fixture":1,"range":[0,255]},
+         {"fixture":12,"range":[0,255]},
+        {"fixture":7,"range":[0,255]},
+    ],
+    6:[
+        {"fixture":4,"range":[0,255]},
+        {"fixture":9,"range":[0,255]},
+    ],
+     0:[],  
+    #2:[{"fixture":60,"range":[0,10]}],
+    1:[],
+   
 }
 
+for i in range(5,9):
+    pairs[3].append({"fixture":i,"range":[0,255]})
+
 for i in range(1,4):
-    pairs[0].append({"fixture":i,"range":[255,0]})
+    pairs[0].append({"fixture":i,"range":[0,255]})
 
 for i in range(10,14):
-    pairs[1].append({"fixture":i,"range":[255,0]})
+    pairs[1].append({"fixture":i,"range":[0,255]})
 
 #pairs of sensors and audio controllers, audio has 0,1,2,3 controllers as targets
 pairs_audio={
-    0:[{"control":0,"range":[400,1800]}]
+   # 0:[{"control":0,"range":[60,2000]}],
+    1:[{"control":1,"range":[0.1,1]}],
+   # 0:[{"control":2,"range":[0.9,1]}]
 }
 
 DMXOSC=dmx_osc(oscport=54321,
