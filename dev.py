@@ -6,7 +6,7 @@ from classes.dmx_osc import dmx_osc
 
 # Sensors
 sensors = [
-   {"type":"static","id":7},
+   {"type":"static","id":11},
     {"type":"dinamic","id":0}
 ]
 
@@ -36,7 +36,7 @@ DMXOSC=dmx_osc(oscport=54321,
                audiodeviceindex=12,
                sensors=sensors,
                fixtures=fixtures,
-               pairs=pairs
+               pairs=pairs,
                pairs_audio=pairs_audio)
 
 

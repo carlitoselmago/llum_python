@@ -53,7 +53,7 @@ class dmx_osc:
         self.sensors=sensors
         self.fixtures=fixtures 
         self.pairs=pairs 
-        self.pairs=pairs_audio
+        self.pairs_audio=pairs_audio
 
         if self.sound_enabled:
             #self.Sound=Sound(self,audiodeviceindex)
@@ -81,8 +81,10 @@ class dmx_osc:
 
     def prepareData(self):
         for s in self.sensors:
+            
             if s["type"]=="static":
                 self.margins[s["id"]]={"min":200.0,"max":-200.0,"tested":0}
+                print('self.margins[s["id"]]',self.margins[s["id"]])
         
         #new fixture white balance
         newWB=[0.34,0.69,0.58,0.27]
@@ -102,7 +104,12 @@ class dmx_osc:
 
         for sensorid in self.pairs:
             pair=self.pairs[sensorid]
+            #print(pair)
+            #print("")
             for fixture in pair:
+                #print(self.fixtures[fixture["fixture"]]["channels"])
+                #print("+++++++++++++++++++++++++++++++++++++++++++")
+                #print("")
                 for dmxchannel in self.fixtures[fixture["fixture"]]["channels"]:
                     if dmxchannel not in self.dmxchannel_data_chain:
                         self.dmxchannel_data_chain[dmxchannel]=[]
@@ -113,12 +120,15 @@ class dmx_osc:
         for sensorid in self.pairs_audio:
             pair=self.pairs_audio[sensorid]
             for controller in pair:
-                XXXX
+                self.sensors_audio_val[controller["control"]]=self.avg(controller["range"])
+                print("audio pair",pair)
+                print("")
 
         #print("CREATED dmxchannel_data_chain (DMXchannel-> order of sensors): ")
         #print(self.dmxchannel_data_chain)
-        print("")
+        #print("")
         
+    
 
     def startOSC(self):
         # Setting up the OSC dispatcher
@@ -147,11 +157,16 @@ class dmx_osc:
     def senseLoop(self,adress, *args):
         # Handle sensor data here
         #print("Sensor ", adress, "Args:", args)
-        sensorid=int(adress[-1])
+        #sensorid=int(adress[-1])
+        sensorid=int(adress.split("board")[1])
+        #print("sensorid",sensorid)
         value=list(args)[self.osc_channel]
-        
+        #print(value,adress)
+        #print("self.margins",self.margins)
+        #print("sensorid",sensorid)
         if sensorid in self.margins:
             #static sensors
+            #print(self.margins[sensorid]["tested"])
             if self.margins[sensorid]["tested"]<self.rangetime:
                 if value<self.margins[sensorid]["min"]:
                     self.margins[sensorid]["min"]=value
@@ -183,11 +198,20 @@ class dmx_osc:
                         
                         pvalue = abs(value)  # in a range from 0 to 50 approx
                         #pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
-                        pvalue=self.scale_single_value(abs(pvalue), 0, 50, dmxrange[1], dmxrange[0])
+                        pvalue=self.scale_single_value(pvalue, 0, 50, dmxrange[1], dmxrange[0])
                         self.sensor_last_vals[sensorid].append(self.sensor_val[sensorid])
                         if len(self.sensor_last_vals[sensorid])>self.sensor_last_amount:
                             self.sensor_last_vals[sensorid].pop(0)
                         self.sensor_val[sensorid]=pvalue
+        #audio pairs
+        if sensorid in self.sensors_audio_val:
+            for pair in self.pairs_audio[sensorid]:
+                dmxrange = pair["range"]
+                pvalue = abs(value)
+                pvalue=self.scale_single_value(pvalue, 0, 50, dmxrange[1], dmxrange[0])
+                #print("audio controller pvalue",pvalue)
+                self.sensors_audio_val[sensorid]=pvalue
+
         #time.sleep(0.001)
                        
     def sendDMXLoop(self):
@@ -204,34 +228,34 @@ class dmx_osc:
                         if sensor["type"] == "dinamic":
                             smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]]))
                             value-= smooth_value
-                            
                         else:
+                            #print("stattic value",sensor["sensorid"])
                             value -= self.sensor_val[sensor["sensorid"]]
                 #white balance adjustment
                 value=value*self.channeladjustments[chan]
                 self.dmxdata[chan]=value
                 if self.dmx:
+                    #print(chan,value)
                     self.dmx.update_channel(chan, max(min(int(value), 255), 0))
       
             if self.dmx:
                 self.dmx.run(self.dmxspeed)
             try:
                 self.sound_queue.put(self.sensors_audio_val)
-                
                 #self.sound_queue.put(self.dmxdata[7])
                
             except Exception as e:
                 print(e)
             #time.sleep(0.001)
 
-    def putDatainChain(self):
-        pass
-    
     def close(self):
         self.terminate_flag.value = True
         self.sound_process.join()
     
     ## HELPER FUNCTIONS
+        
+    def avg(self,lst):
+        return sum(lst) / len(lst) 
 
     def getSensorType(self,sensorid):
         for sensor in self.sensors:

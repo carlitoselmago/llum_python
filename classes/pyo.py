@@ -7,13 +7,32 @@ import sys
 
 class Sound:
 
+    controllers=4
+    oldamount=5
+    controldata=[]
+
     def __init__(self,dmxosc,queue, terminate_flag,audiodeviceindex=0):
         self.queue = queue
         self.terminate_flag = terminate_flag
         self.dmxosc=dmxosc
         self.audiodeviceindex=audiodeviceindex
-        pass
+        self.prepareData()
 
+    def avg(self,lst):
+        lst=list(lst)
+        return sum(lst) / len(lst) 
+    
+    def prepareData(self):
+        for i in range(self.controllers):
+            self.controldata.append([])
+
+    def putData(self,index,value):
+        self.controldata[index].append(value)
+        if len(self.controldata[index])>self.oldamount:
+            self.controldata[index].pop(0)
+
+    def getData(self,index):
+        return self.avg(self.controldata[index])
 
     def start(self):
         s = Server(audio="jack",sr=44100, buffersize=4056)#Server(sr=44100, buffersize=4056)
@@ -52,22 +71,30 @@ class Sound:
         # Output the mixed audio
         mixer.out()
         
+        
         #############################################################################
 
+        """
         #set controllers (4 of them)
         controllers={
             0:filt.freq,
             1:lfo.mul,
             2:lfo.add,
-            3:mixer.amp
+           # 3:mixer.amp
         }
+        """
 
         while not self.terminate_flag.value:
             if not self.queue.empty():
                 sensor_data=self.queue.get()
                 for index in sensor_data:
+                    
+
                     sensor_val=sensor_data[index]
-                    controllers[index]=sensor_val
+                    self.putData(index,sensor_val)
+                    if index==0:
+                        filt.freq=self.getData(index)
+                
                 #dmx_data = self.queue.get()
                 #print(dmx_data)
                 #filt.freq=self.dmxosc.scale_single_value(dmx_data,-50,50,400,1800)
