@@ -7,7 +7,7 @@ DMX_llum_autosave/
 *recovered.noisette
 crashlog.txt
 crashlog.dmp
-
+sensor_simulator_autosave
 # C extensions
 *.so
 
