@@ -55,7 +55,7 @@ class dmx_osc:
         self.pairs=pairs 
         self.pairs_audio=pairs_audio
 
-        if self.sound_enabled:
+        if self.sound_enabled: 
             #self.Sound=Sound(self,audiodeviceindex)
             #sound_thread = threading.Thread(target=self.Sound.start)
             #sound_thread.start()
