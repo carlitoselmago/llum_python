@@ -47,7 +47,8 @@ DMXOSC=dmx_osc(oscport=54321,
                audiodeviceindex=2,
                sensors=sensors,
                fixtures=fixtures,
-               pairs=pairs)
+               pairs=pairs,
+               pairs_audio=pairs_audio)
 
 
 #################################################################################
