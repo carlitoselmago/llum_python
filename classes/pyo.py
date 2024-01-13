@@ -127,7 +127,7 @@ class Sound:
             
             if not self.queue.empty():
                 sensor_data=self.queue.get()
-                print(sensor_data)
+                #print(sensor_data)
                 for index in sensor_data:
                     
 
@@ -146,7 +146,8 @@ class Sound:
                         pass 
                     
                     if index==2:
-                        vol1.value=sensor_val#self.getData(index)
+                        audio1.mul=sensor_val
+                        #vol1.value=sensor_val#self.getData(index)
                         #vol1.value = self.getData(index)#random.uniform(0.9, 1)
                         pass 
                     """

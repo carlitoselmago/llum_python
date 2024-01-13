@@ -96,11 +96,11 @@ class dmx_osc:
             if self.fixtures[id]["type"]=="new":
                 for i,c in enumerate(self.fixtures[id]["channels"]):
                     self.channeladjustments[c]=newWB[i]
-                    self.dmxdata[c]=255
+                    self.dmxdata[c]=0#255
             else:
                 for c in self.fixtures[id]["channels"]:
                     self.channeladjustments[c]=1.0
-                    self.dmxdata[c]=255
+                    self.dmxdata[c]=0#255
 
         for sensorid in self.pairs:
             pair=self.pairs[sensorid]
@@ -114,8 +114,8 @@ class dmx_osc:
                     if dmxchannel not in self.dmxchannel_data_chain:
                         self.dmxchannel_data_chain[dmxchannel]=[]
                     self.dmxchannel_data_chain[dmxchannel].append({"sensorid":sensorid,"type":self.getSensorType(sensorid)})
-                    self.sensor_val[sensorid]=255
-                    self.sensor_last_vals[sensorid]=[255]*self.sensor_last_amount
+                    self.sensor_val[sensorid]=0#255
+                    self.sensor_last_vals[sensorid]=[0]*self.sensor_last_amount
         
         for sensorid in self.pairs_audio:
             pair=self.pairs_audio[sensorid]
@@ -186,7 +186,7 @@ class dmx_osc:
                         #scale data
                         dmxrange=pair["range"]
                         pvalue=self.scale_single_value(value,self.margins[sensorid]["min"],self.margins[sensorid]["max"],dmxrange[0],dmxrange[1])
-                        pvalue=abs(255-pvalue)
+                        pvalue=abs(0+pvalue)
                         self.sensor_val[sensorid]=pvalue
                         
         else:
@@ -211,7 +211,7 @@ class dmx_osc:
                 dmxrange = pair["range"]
                 pvalue = abs(value)
                 pvalue=self.scale_single_value(pvalue, 0, 50, dmxrange[1], dmxrange[0])
-                print("audio controller pvalue",pvalue)
+                #print("audio controller pvalue",pvalue)
                 self.sensors_audio_val[pair["control"]]=pvalue
 
         #time.sleep(0.001)
@@ -223,16 +223,16 @@ class dmx_osc:
         while True:
             for chan in self.dmxchannel_data_chain:
                 alpha = 0.2  # Smoothing factor, you can adjust this between 0 and 1
-                value = 255
+                value = 0 # change this to 255 to make it substractive
                 #TODO: improve this, maybe return to the idea of discounting over time
                 for sensor in self.dmxchannel_data_chain[chan]:
                     if sensor["sensorid"] in self.sensor_val:
                         if sensor["type"] == "dinamic":
                             smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]]))
-                            value-= smooth_value
+                            value+= smooth_value
                         else:
                             #print("stattic value",sensor["sensorid"])
-                            value -= self.sensor_val[sensor["sensorid"]]
+                            value += self.sensor_val[sensor["sensorid"]]
                 #white balance adjustment
                 #value=value*self.channeladjustments[chan]
                 self.dmxdata[chan]=value
