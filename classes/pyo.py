@@ -9,7 +9,7 @@ import threading
 class Sound:
 
     controllers=4
-    oldamount=5
+    oldamount=80
     controldata=[]
 
     def __init__(self,dmxosc,queue, terminate_flag,audiodeviceindex=0):
@@ -36,7 +36,7 @@ class Sound:
         return self.avg(self.controldata[index])
 
     def start(self):
-        s = Server(audio="jack",sr=48000, buffersize=96000)#Server(sr=44100, buffersize=4056)
+        s = Server(audio="jack",sr=44100, buffersize=96000)#Server(sr=44100, buffersize=4056)
         sleep(5)
         pa_list_devices()
         s.setInOutDevice(self.audiodeviceindex)  # Make sure this device supports stereo
@@ -76,8 +76,8 @@ class Sound:
 
         # Load audio files
         audio1 = SfPlayer("audio1.wav", loop=True)
-        audio2 = SfPlayer("audio2.wav", loop=True)
-
+        audio2 = SfPlayer("audio2.wav", loop=True).out()
+        """
         # Reverb 1 ##############################################################
         #rev = Freeverb(audio1, size=0.8, damp=0.7, bal=0.5).out()
 
@@ -103,13 +103,39 @@ class Sound:
         # END reverb 2 ###########################################
 
         # Apply filter to audio1
-        filt = ButBP(audio1, freq=1000, q=5).out()
+        #filt = ButBP(audio1, freq=100, q=5).out()
+        freq = Sig(1000)
+        freq.ctrl([SLMap(50, 5000, "lin", "value", 1000)], title="Cutoff Frequency")
+
+        # Three different lowpass filters
+        tone = Tone(, freq)
+        butlp = ButLP(n, freq)
+        mooglp = MoogLP(n, freq)
+
+        # Interpolates between input objects to produce a single output
+        sel = Selector([tone, butlp, mooglp]).out()
+        """
+
+        # Common cutoff frequency control
+        freq = Sig(1000)
+        #freq.ctrl([SLMap(50, 5000, "lin", "value", 1000)], title="Cutoff Frequency")
+        n=audio1
+        # Three different lowpass filters
+        tone = Tone(n, freq)
+        butlp = ButLP(n, freq)
+        mooglp = MoogLP(n, freq)
+
+        # Interpolates between input objects to produce a single output
+        sel = Selector([tone, butlp, mooglp])#.out()
+        #sel.ctrl(title="Filter selector (0=Tone, 1=ButLP, 2=MoogLP)")
+        
+        rev = Freeverb(sel, size=1, damp=0.7, bal=0.5).out()
 
         # Volume control
-        vol1 = SigTo(value=0.5, time=0.1, init=0.5)
-        vol2 = SigTo(value=0.5, time=0.1, init=0.5)
-        audio1.mul = vol1
-        audio2.mul = vol2
+        #vol1 = SigTo(value=0.5, time=0.1, init=0.5)
+        #vol2 = SigTo(value=0.5, time=0.1, init=0.5)
+        #audio1.mul = vol1
+        #audio2.mul = vol2
            
         #############################################################################
 
@@ -132,24 +158,35 @@ class Sound:
                     
 
                     sensor_val=sensor_data[index]
-                    #self.putData(index,sensor_val)
+                    self.putData(index,sensor_val)
                   
                     if index==0:
-                        all2.feedback=sensor_val#self.getData(index)
+                        val=self.getData(index)
+                        freq.value=val
+                        #all2.feedback=sensor_val#self.getData(index)
                         #filt.freq=self.getData(index)
                         pass
                    
                     if index==1:
-                        #print(sensor_val)
-                        filt.freq=sensor_val#self.getData(index)
+                        audio1.mul=self.getData(index)
+                        #print(val)
+                        #filt.freq=sensor_val#self.getData(index)
+                        
                         #all2.feedback=self.getData(index)#random.uniform(0.1,1)
                         pass 
                     
                     if index==2:
-                        audio1.mul=sensor_val
+                        val=self.getData(index)  
+                        #print(val)
+                        audio2.mul=val
                         #vol1.value=sensor_val#self.getData(index)
                         #vol1.value = self.getData(index)#random.uniform(0.9, 1)
                         pass 
+
+                    if index==3:
+                        val=self.getData(index) 
+                        print(val)
+                        rev.bal=val
                     """
                     if index==3:
                         pass

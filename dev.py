@@ -6,9 +6,8 @@ from classes.dmx_osc import dmx_osc
 
 # Sensors
 sensors = [
-   {"type":"static","id":11},
-    {"type":"dinamic","id":0},
-   {"type":"dinamic","id":1}
+   {"type":"static","id":7},
+    {"type":"dinamic","id":0}
 ]
 
 #fixtures, key is an unrealted to fixtures or sensors ids, its just for pairs targeting
@@ -20,22 +19,13 @@ fixtures={
 # pairs of sensors and fixtures, the key = sensor
 pairs={
     
-    11:[{"fixture":1,"range":[30,0]}],
+    7:[{"fixture":1,"range":[150,255]}],
     0:[{"fixture":1,"range":[255,0]} ],
     
 }
 #pairs of sensors and audio controllers, audio has 0,1,2,3 controllers as targets
 pairs_audio={
-   
-    0:[ 
-      {"control":1,"range":[60,2000]},
-        #{"control":0,"range":[0.1,1]},
-     ],
-     1:[ 
-       # {"control":1,"range":[60,2000]},
-        {"control":2,"range":[0.9,1]},
-     ]
-    
+    7:[{"control":0,"range":[0.1,1]}]
 }
 
 DMXOSC=dmx_osc(oscport=54321,
@@ -49,5 +39,5 @@ DMXOSC=dmx_osc(oscport=54321,
                pairs=pairs,
                pairs_audio=pairs_audio)
 
-DMXOSC.dmx.update_channel(6,255) ### THIS IS ONLY FOR LOCAL TEST
+
 #################################################################################

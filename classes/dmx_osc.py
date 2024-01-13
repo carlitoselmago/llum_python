@@ -75,6 +75,34 @@ class dmx_osc:
 
         self.startOSC()
 
+        #blackout
+        for c in range(1,100):
+            self.dmx.update_channel(c, 0)
+            self.dmx.run(self.dmxspeed)
+        time.sleep(18)
+        #INIT FOG
+        for c in range(62,64):
+            self.dmx.update_channel(c, 255)
+        for t in range(1,255):
+            self.dmx.update_channel(61, t)
+            self.dmx.run(self.dmxspeed)
+            time.sleep(0.04)
+        #self.dmx.update_channel(61, 255)
+        time.sleep(2)
+        self.dmx.update_channel(60, 255)
+        
+        self.dmx.run(self.dmxspeed)
+        time.sleep(30)
+
+        #stop fog
+        self.dmx.update_channel(60, 0)
+        self.dmx.run(self.dmxspeed)
+        time.sleep(15)
+        for t in reversed(range(1,255)):
+            self.dmx.update_channel(61, t)
+            self.dmx.run(self.dmxspeed)
+            time.sleep(0.08)
+        time.sleep(5)
         dmx_thread = threading.Thread(target=self.sendDMXLoop)
         dmx_thread.start()
         
@@ -95,7 +123,13 @@ class dmx_osc:
         for id in self.fixtures:
             if self.fixtures[id]["type"]=="new":
                 for i,c in enumerate(self.fixtures[id]["channels"]):
-                    self.channeladjustments[c]=newWB[i]
+                    #print('newWB[i]',newWB[i])
+                    #print(self.channeladjustments)
+                    #print('self.channeladjustments[c]',self.channeladjustments[c])
+                    try:
+                        self.channeladjustments[c]=newWB[i]
+                    except:
+                        self.channeladjustments[c]=1.0
                     self.dmxdata[c]=0#255
             else:
                 for c in self.fixtures[id]["channels"]:
@@ -234,7 +268,7 @@ class dmx_osc:
                             #print("stattic value",sensor["sensorid"])
                             value += self.sensor_val[sensor["sensorid"]]
                 #white balance adjustment
-                #value=value*self.channeladjustments[chan]
+                value=value*self.channeladjustments[chan]
                 self.dmxdata[chan]=value
                 if self.dmx:
                     #print(chan,value)
