@@ -7,7 +7,8 @@ from classes.dmx_osc import dmx_osc
 # Sensors
 sensors = [
    {"type":"static","id":11},
-    {"type":"dinamic","id":0}
+    {"type":"dinamic","id":0},
+      {"type":"dinamic","id":1}
 ]
 
 #fixtures, key is an unrealted to fixtures or sensors ids, its just for pairs targeting
@@ -25,7 +26,16 @@ pairs={
 }
 #pairs of sensors and audio controllers, audio has 0,1,2,3 controllers as targets
 pairs_audio={
-    7:[{"control":0,"range":[0.1,1]}]
+   
+    0:[ 
+       # {"control":1,"range":[60,2000]},
+        #{"control":0,"range":[0.1,1]},
+     ],
+     1:[ 
+        {"control":1,"range":[60,2000]},
+        #{"control":2,"range":[0.1,1]},
+     ]
+    
 }
 
 DMXOSC=dmx_osc(oscport=54321,

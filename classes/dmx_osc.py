@@ -122,6 +122,7 @@ class dmx_osc:
             for controller in pair:
                 self.sensors_audio_val[controller["control"]]=self.avg(controller["range"])
                 print("audio pair",pair)
+                print('self.sensors_audio_val[controller["control"]]',controller["control"],self.sensors_audio_val[controller["control"]])
                 print("")
 
         #print("CREATED dmxchannel_data_chain (DMXchannel-> order of sensors): ")
@@ -204,13 +205,14 @@ class dmx_osc:
                             self.sensor_last_vals[sensorid].pop(0)
                         self.sensor_val[sensorid]=pvalue
         #audio pairs
-        if sensorid in self.sensors_audio_val:
+        if sensorid in self.pairs_audio:
+            
             for pair in self.pairs_audio[sensorid]:
                 dmxrange = pair["range"]
                 pvalue = abs(value)
                 pvalue=self.scale_single_value(pvalue, 0, 50, dmxrange[1], dmxrange[0])
-                #print("audio controller pvalue",pvalue)
-                self.sensors_audio_val[sensorid]=pvalue
+                print("audio controller pvalue",pvalue)
+                self.sensors_audio_val[pair["control"]]=pvalue
 
         #time.sleep(0.001)
                        
@@ -241,6 +243,7 @@ class dmx_osc:
             if self.dmx:
                 self.dmx.run(self.dmxspeed)
             try:
+                #print(self.sensors_audio_val)
                 self.sound_queue.put(self.sensors_audio_val)
                 #self.sound_queue.put(self.dmxdata[7])
                

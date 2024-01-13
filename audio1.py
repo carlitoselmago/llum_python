@@ -8,12 +8,14 @@ s = Server(audio="jack",sr=44100, buffersize=4056).boot()
 s.setInOutDevice(3)
 
 # Load audio files
-audio1 = SfPlayer('audio1.mp3', loop=True)
-audio2 = SfPlayer('audio2.mp3', loop=True)
+audio1 = SfPlayer('audio1.wav', loop=True)
+audio2 = SfPlayer('audio2.wav', loop=True)
 
+"""
 # Reverb 1 ##############################################################
-#rev = Freeverb(audio1, size=0.8, damp=0.7, bal=0.5).out()
+rev = Freeverb(audio1, size=0.8, damp=0.7, bal=0.5).out()
 
+"""
 # reverb alternative ####################################################
 # Four parallel stereo comb filters. The delay times are chosen
 # to be as uncorrelated as possible. Prime numbers are a good
@@ -42,7 +44,7 @@ filt = ButBP(audio1, freq=1000, q=5).out()
 vol1 = SigTo(value=0.5, time=0.1, init=0.5)
 vol2 = SigTo(value=0.5, time=0.1, init=0.5)
 audio1.mul = vol1
-audio2.mul = vol2
+#audio2.mul = vol2
 
 # Start the server
 s.start()
@@ -52,6 +54,7 @@ def randomize():
     # Randomize reverb dry/wet
     #rev.bal = random.uniform(0, 1)
     all2.feedback=random.uniform(0.1,1)
+    
 
     # Randomize filter frequency
     filt.freq = random.uniform(60, 20000)

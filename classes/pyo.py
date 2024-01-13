@@ -4,6 +4,7 @@ import random
 import numpy as np
 from time import sleep
 import sys
+import threading
 
 class Sound:
 
@@ -35,7 +36,7 @@ class Sound:
         return self.avg(self.controldata[index])
 
     def start(self):
-        s = Server(audio="jack",sr=44100, buffersize=4056)#Server(sr=44100, buffersize=4056)
+        s = Server(audio="jack",sr=48000, buffersize=96000)#Server(sr=44100, buffersize=4056)
         sleep(5)
         pa_list_devices()
         s.setInOutDevice(self.audiodeviceindex)  # Make sure this device supports stereo
@@ -44,7 +45,7 @@ class Sound:
         #synth part
         s.start()
         #pa_list_devices()
-
+        """
         #pitches = [midiToHz(m) for m in [36, 43, 48, 55, 60, 62, 64, 65, 67, 69, 71, 72]]
 
         # Create a white noise generator
@@ -70,13 +71,12 @@ class Sound:
 
         # Output the mixed audio
         mixer.out()
-        
-        #####################################################################
         """
-        print("DIR:",os.getcwd())
+        #####################################################################
+
         # Load audio files
-        audio1 = SfPlayer("audio1.mp3", loop=True)
-        audio2 = SfPlayer("audio2.mp3", loop=True)
+        audio1 = SfPlayer("audio1.wav", loop=True)
+        audio2 = SfPlayer("audio2.wav", loop=True)
 
         # Reverb 1 ##############################################################
         #rev = Freeverb(audio1, size=0.8, damp=0.7, bal=0.5).out()
@@ -110,7 +110,7 @@ class Sound:
         vol2 = SigTo(value=0.5, time=0.1, init=0.5)
         audio1.mul = vol1
         audio2.mul = vol2
-        """    
+           
         #############################################################################
 
         """
@@ -124,29 +124,42 @@ class Sound:
         """
 
         while not self.terminate_flag.value:
+            
             if not self.queue.empty():
                 sensor_data=self.queue.get()
+                print(sensor_data)
                 for index in sensor_data:
                     
 
                     sensor_val=sensor_data[index]
-                    self.putData(index,sensor_val)
+                    #self.putData(index,sensor_val)
+                  
                     if index==0:
+                        all2.feedback=sensor_val#self.getData(index)
                         #filt.freq=self.getData(index)
                         pass
+                   
                     if index==1:
+                        #print(sensor_val)
+                        filt.freq=sensor_val#self.getData(index)
                         #all2.feedback=self.getData(index)#random.uniform(0.1,1)
                         pass 
+                    
                     if index==2:
+                        vol1.value=sensor_val#self.getData(index)
                         #vol1.value = self.getData(index)#random.uniform(0.9, 1)
                         pass 
+                    """
                     if index==3:
                         pass
-                
+                    """
                 #dmx_data = self.queue.get()
                 #print(dmx_data)
                 #filt.freq=self.dmxosc.scale_single_value(dmx_data,-50,50,400,1800)
-        
+                
+            #sleep(0.0001)
             pass
         print("ENDDDD")
         sys.exit()
+
+    
