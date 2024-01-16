@@ -33,11 +33,14 @@ DMXOSC=dmx_osc(oscport=54321,
                dmxport='/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A50285BI-if00-port0',
                device_type='ftdi',
                margin_padding=0.2,
-               audiodeviceindex=12,
+               audiodeviceindex=14,
                sensors=sensors,
                fixtures=fixtures,
                pairs=pairs,
-               pairs_audio=pairs_audio)
+               pairs_audio=pairs_audio,
+               audioback="pipewire",
+               skip_intro=False)
 
+DMXOSC.dmx.update_channel(6,255) ### THIS IS ONLY FOR LOCAL TEST (minilead moving head)
 
 #################################################################################

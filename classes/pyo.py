@@ -35,8 +35,8 @@ class Sound:
     def getData(self,index):
         return self.avg(self.controldata[index])
 
-    def start(self):
-        s = Server(audio="jack",sr=44100, buffersize=96000)#Server(sr=44100, buffersize=4056)
+    def start(self,audioback):
+        s = Server(audio=audioback,sr=44100, buffersize=96000)#Server(sr=44100, buffersize=4056)
         sleep(5)
         pa_list_devices()
         s.setInOutDevice(self.audiodeviceindex)  # Make sure this device supports stereo

@@ -18,6 +18,8 @@ class dmx_osc:
     dmxspeed=0.0001 #speed in seconds for the dmx loop (the lower the faster)
     movement_threshold=0 # value difference for dinamic sensors
     sound_enabled=True
+    endminutes=1 # the time this code should wait till it starts to a fade out
+    global_dimmer=1.0
 
     ###################
 
@@ -42,7 +44,9 @@ class dmx_osc:
 
     sensors_audio_val={}
 
-    def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={},pairs_audio={}):
+    stop_flag = False
+
+    def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={},pairs_audio={},audioback="jack",skip_intro=False):
         self.oscport=oscport
         self.oscip=oscip
         self.rangetime=rangetime
@@ -63,7 +67,7 @@ class dmx_osc:
             self.sound_queue = Queue(maxsize=2)
             self.Sound = Sound(self,self.sound_queue, self.terminate_flag,audiodeviceindex)
             # Create a process for the sound task
-            self.sound_process =Process(target=self.Sound.start)
+            self.sound_process =Process(target=self.Sound.start,args=(audioback,))
             self.sound_process.start()
 
         try:
@@ -74,38 +78,86 @@ class dmx_osc:
         self.prepareData()
 
         self.startOSC()
-
-        #blackout
-        for c in range(1,100):
-            self.dmx.update_channel(c, 0)
+        if not skip_intro:
+            # INIT SEQUENCE ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+            #blackout
+            print("blackout ...")
+            for c in range(1,100):
+                self.dmx.update_channel(c, 0)
+                self.dmx.run(self.dmxspeed)
+            time.sleep(18)
+            #INIT FOG
+            print("INIT fog lights...")
+            for c in range(62,64):
+                self.dmx.update_channel(c, 255)
+            for t in range(1,255):
+                self.dmx.update_channel(61, t)
+                self.dmx.run(self.dmxspeed)
+                time.sleep(0.04)
+            #self.dmx.update_channel(61, 255)
+            time.sleep(2)
+            print("init fog...")
+            self.dmx.update_channel(60, 255)
+            
             self.dmx.run(self.dmxspeed)
-        time.sleep(18)
-        #INIT FOG
-        for c in range(62,64):
-            self.dmx.update_channel(c, 255)
-        for t in range(1,255):
-            self.dmx.update_channel(61, t)
+            time.sleep(30)
+            print("stop fog...")
+            #stop fog
+            self.dmx.update_channel(60, 0)
             self.dmx.run(self.dmxspeed)
-            time.sleep(0.04)
-        #self.dmx.update_channel(61, 255)
-        time.sleep(2)
-        self.dmx.update_channel(60, 255)
-        
-        self.dmx.run(self.dmxspeed)
-        time.sleep(30)
-
-        #stop fog
-        self.dmx.update_channel(60, 0)
-        self.dmx.run(self.dmxspeed)
-        time.sleep(15)
-        for t in reversed(range(1,255)):
-            self.dmx.update_channel(61, t)
-            self.dmx.run(self.dmxspeed)
-            time.sleep(0.08)
+            time.sleep(15)
+            print("pause...")
+            for t in reversed(range(1,255)):
+                self.dmx.update_channel(61, t)
+                self.dmx.run(self.dmxspeed)
+                time.sleep(0.08)
+            
+        else:
+            print("::::::::::::::::::::::::")
+            print("::::SKIPPING INTRO::::::")
+            print("::::::::::::::::::::::::")
         time.sleep(5)
-        dmx_thread = threading.Thread(target=self.sendDMXLoop)
-        dmx_thread.start()
+        print("NORMAL START....")
+        self.dmx_thread = threading.Thread(target=self.sendDMXLoop)
+        self.dmx_thread.start()
+
+        #end timer thread
+
+        self.end()
         
+    def end(self):
+        
+        def thread_function():
+            time.sleep(self.endminutes * 60)
+            #END
+            print("init fadeout end.....")
+            for t in range(1,255):
+                self.global_dimmer-=0.01
+                if self.global_dimmer<0.1:
+                    break
+                time.sleep(0.04)
+            print("END ::::::::::::::::::::::::::::::::")
+            self.stop_flag=True
+            
+
+            #stop all threads
+            self.server.shutdown()
+            self.OSC_thread.join()
+            self.dmx_thread.join()
+            
+           
+            #stop audio
+            if self.sound_enabled: 
+                self.close()
+                self.sound_process.terminate()
+            sys.exit()
+            
+        
+        fadeout_thread = threading.Thread(target=thread_function)
+        fadeout_thread.start()
+        
+       
+
 
     def prepareData(self):
         for s in self.sensors:
@@ -172,22 +224,24 @@ class dmx_osc:
             disp.map("/board" + str(s["id"]), self.senseLoop)
 
         # Setting up the OSC server
-        server = osc_server.ThreadingOSCUDPServer((self.oscip ,self.oscport), disp)
+        self.server = osc_server.ThreadingOSCUDPServer((self.oscip ,self.oscport), disp)
         #server = osc_server.ThreadingOSCUDPServer(("0.0.0.0", self.oscport), disp)
-        print("Serving on {}".format(server.server_address))
+        print("Serving on {}".format(self.server.server_address))
 
         # Function to run the server
         def run_server():
             try:
-                server.serve_forever()
+                self.server.serve_forever()
             except KeyboardInterrupt:
                 print("Server stopped by user")
             finally:
-                server.server_close()
+                print("OSC SERVER CLOSED:::")
+                self.server.server_close()
 
         # Running the OSC server in a separate thread
-        server_thread = threading.Thread(target=run_server)
-        server_thread.start()
+        self.OSC_thread = threading.Thread(target=run_server)
+        self.OSC_thread.start()
+        
 
     def senseLoop(self,adress, *args):
         # Handle sensor data here
@@ -254,7 +308,7 @@ class dmx_osc:
 
         #self.dmx.update_channel(6,255) ### THIS IS ONLY FOR LOCAL TEST
 
-        while True:
+        while not self.stop_flag:
             for chan in self.dmxchannel_data_chain:
                 alpha = 0.2  # Smoothing factor, you can adjust this between 0 and 1
                 value = 0 # change this to 255 to make it substractive
@@ -272,22 +326,27 @@ class dmx_osc:
                 self.dmxdata[chan]=value
                 if self.dmx:
                     #print(chan,value)
-                    self.dmx.update_channel(chan, max(min(int(value), 255), 0))
+                    finalvalue=int( max(min(int(value), 255), 0)*self.global_dimmer )
+                    #print("finalvalue",finalvalue)
+                    self.dmx.update_channel(chan, finalvalue)
       
             if self.dmx:
                 self.dmx.run(self.dmxspeed)
             try:
-                #print(self.sensors_audio_val)
-                self.sound_queue.put(self.sensors_audio_val)
-                #self.sound_queue.put(self.dmxdata[7])
+                if self.sound_enabled: 
+                    #print(self.sensors_audio_val)
+                    self.sound_queue.put(self.sensors_audio_val)
+                    #self.sound_queue.put(self.dmxdata[7])
+                pass
                
             except Exception as e:
                 print(e)
             #time.sleep(0.001)
+        print("END sendDMXLoop::::")
 
     def close(self):
         self.terminate_flag.value = True
-        self.sound_process.join()
+        self.sound_process.terminate()
     
     ## HELPER FUNCTIONS
         
