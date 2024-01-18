@@ -6,8 +6,8 @@ from classes.dmx_osc import dmx_osc
 
 # Sensors
 sensors = [
-   {"type":"static","id":7},
-    {"type":"dinamic","id":0}
+   {"type":"static","id":1},
+    #{"type":"dinamic","id":0}
 ]
 
 #fixtures, key is an unrealted to fixtures or sensors ids, its just for pairs targeting
@@ -19,8 +19,8 @@ fixtures={
 # pairs of sensors and fixtures, the key = sensor
 pairs={
     
-    7:[{"fixture":1,"range":[150,255]}],
-    0:[{"fixture":1,"range":[255,0]} ],
+    1:[{"fixture":1,"range":[0,100]}],
+    #0:[{"fixture":1,"range":[255,0]} ],
     
 }
 #pairs of sensors and audio controllers, audio has 0,1,2,3 controllers as targets
@@ -29,7 +29,7 @@ pairs_audio={
 }
 
 DMXOSC=dmx_osc(oscport=54321,
-               oscip="localhost",
+               oscip="172.25.7.255",
                dmxport='/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A50285BI-if00-port0',
                device_type='ftdi',
                margin_padding=0.2,
@@ -39,7 +39,8 @@ DMXOSC=dmx_osc(oscport=54321,
                pairs=pairs,
                pairs_audio=pairs_audio,
                audioback="pipewire",
-               skip_intro=True)
+               skip_intro=True,
+               endminutes=10000)
 
 DMXOSC.dmx.update_channel(6,255) ### THIS IS ONLY FOR LOCAL TEST (minilead moving head)
 

@@ -18,6 +18,7 @@ class dmx_osc:
     dmxspeed=0.0001 #speed in seconds for the dmx loop (the lower the faster)
     movement_threshold=0 # value difference for dinamic sensors
     sound_enabled=True
+    
     endminutes=4 # the time this code should wait till it starts to a fade out
     global_dimmer=1.0
 
@@ -48,7 +49,7 @@ class dmx_osc:
 
     stop_flag = False
 
-    def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=6,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={},pairs_audio={},audioback="jack",skip_intro=False):
+    def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={},pairs_audio={},audioback="jack",skip_intro=False,endminutes=15):
         self.oscport=oscport
         self.oscip=oscip
         self.rangetime=rangetime
@@ -60,6 +61,7 @@ class dmx_osc:
         self.fixtures=fixtures 
         self.pairs=pairs 
         self.pairs_audio=pairs_audio
+        self.endminutes=endminutes# the time this code should wait till it starts to a fade out
 
         if self.sound_enabled: 
             #self.Sound=Sound(self,audiodeviceindex)

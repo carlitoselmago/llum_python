@@ -8,7 +8,7 @@
 #include "Adafruit_MAX1704X.h"
 #include "Adafruit_LC709203F.h"
 
-#define readId 7   //ID
+#define readId 1   //ID
 #define resolution 0.0005//0.05//0.0005//0.05//0.0005
 
 #if readId==0
@@ -70,16 +70,16 @@ IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
 const char* host_ip = "192.168.1.139";
 */
-/*
+
 //Wifi configuration
 const char *ssid = "HANGAR_residents";
 const char *password = "residentsQjFXlm4X";
 
-IPAddress ip(172, 25, 0, 200 + readId);
+IPAddress ip(172, 25, 7, 200 + readId);
 IPAddress gateway(172, 25, 0, 1);
 IPAddress subnet(255, 255, 248, 0);
-const char* host_ip = "172.25.0.250";
-*/
+const char* host_ip = "172.25.7.255";
+/*
 //Wifi configuration
 const char *ssid = "MANGO";
 const char *password = "remotamente";
@@ -88,7 +88,7 @@ IPAddress ip(192, 168, 5, 200 + readId);
 IPAddress gateway(192, 168, 5, 1);
 IPAddress subnet(255, 255, 255, 0);
 const char* host_ip = "192.168.4.100";
-
+*/
 void setup(void) {
   Serial.begin(115200);
   //while (!Serial)
@@ -265,7 +265,7 @@ void loop() {
   if((abs(axis_x_ant-a.acceleration.x)>=resolution)||(abs(axis_y_ant-a.acceleration.y)>=resolution)||(abs(axis_z_ant-a.acceleration.z)>=resolution)||(abs(bat_level_ant-bat_level)>=0.1))
     {
       /* Print out the values */
-      OscWiFi.send(host_ip, 54321, board, 10*a.acceleration.x, 10*a.acceleration.y, 10*a.acceleration.z, bat_level);
+      OscWiFi.send(host_ip, 54321, board, 10*a.acceleration.x, 10*a.acceleration.y, 10*a.acceleration.z,10*g.gyro.x, 10*g.gyro.y, 10*g.gyro.z, bat_level);
      
       axis_x_ant = a.acceleration.x;
       axis_y_ant = a.acceleration.y;

@@ -72,7 +72,8 @@ DMXOSC=dmx_osc(oscport=54321,
                pairs=pairs,
                pairs_audio=pairs_audio,
                audioback="jack",
-               skip_intro=False)
+               skip_intro=False,
+               endminutes=4)
 
 
 #################################################################################
