@@ -185,7 +185,7 @@ class Sound:
 
                     if index==3:
                         val=self.getData(index) 
-                        print(val)
+                        #print(val)
                         rev.bal=val
                     """
                     if index==3:

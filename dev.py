@@ -39,7 +39,7 @@ DMXOSC=dmx_osc(oscport=54321,
                pairs=pairs,
                pairs_audio=pairs_audio,
                audioback="pipewire",
-               skip_intro=False)
+               skip_intro=True)
 
 DMXOSC.dmx.update_channel(6,255) ### THIS IS ONLY FOR LOCAL TEST (minilead moving head)
 

@@ -7,15 +7,15 @@ from classes.dmx_osc import dmx_osc
 # Sensors
 sensors = [
     #estaticos
-    #{"type":"static","id":7},
-    {"type":"static","id":8},
-    {"type":"static","id":9},
-    {"type":"static","id":10},
+    {"type":"static","id":7},
+    {"type":"static","id":3},
+    {"type":"static","id":2},
+    #{"type":"static","id":10},
     #dinamicos
-    {"type":"dinamic","id":2},
     {"type":"dinamic","id":1},
-     {"type":"dinamic","id":3},
-        {"type":"dinamic","id":4},
+   # {"type":"dinamic","id":1},
+   # {"type":"dinamic","id":3},
+   # {"type":"dinamic","id":4},
 ]
 
 
@@ -26,19 +26,19 @@ fixtures={
     #2:{"channels":[5,6,7,8],"type":"new"},
     #3:{"channels":[9,10,11,12],"type":"new"},
     #4:{"channels":[13,14,15,16],"type":"new"},
-    1:{"channels":list(range(1,16)),"type":"new"},
-    2:{"channels":list(range(28,35)),"type":"new"}
+    #1:{"channels":list(range(1,16)),"type":"new"},
+    #2:{"channels":list(range(28,35)),"type":"new"}
 
 }
 
 # pairs of sensors and fixtures, the key = sensor
 pairs={
     #passive ###################################3
-    10:[{"fixture":0,"range":[0,40]}],
-    8:[{"fixture":1,"range":[0,40]}],
-    9:[{"fixture":2,"range":[0,40]}],
+    #3:[{"fixture":1,"range":[0,40]}],
+    7:[{"fixture":0,"range":[0,40]}],
+    #2:[{"fixture":2,"range":[0,40]}],
     #direct ####################################33
-    0:[{"fixture":0,"range":[255,0]}]
+    1:[{"fixture":0,"range":[255,0]}]
 
     
    
@@ -70,7 +70,9 @@ DMXOSC=dmx_osc(oscport=54321,
                sensors=sensors,
                fixtures=fixtures,
                pairs=pairs,
-               pairs_audio=pairs_audio)
+               pairs_audio=pairs_audio,
+               audioback="jack",
+               skip_intro=False)
 
 
 #################################################################################

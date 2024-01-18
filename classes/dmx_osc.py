@@ -18,7 +18,7 @@ class dmx_osc:
     dmxspeed=0.0001 #speed in seconds for the dmx loop (the lower the faster)
     movement_threshold=0 # value difference for dinamic sensors
     sound_enabled=True
-    endminutes=1 # the time this code should wait till it starts to a fade out
+    endminutes=4 # the time this code should wait till it starts to a fade out
     global_dimmer=1.0
 
     ###################
@@ -30,7 +30,7 @@ class dmx_osc:
     dmxport=""
     margin_padding=0.1
 
-    osc_channel=2
+    osc_channels=[3,4,5]
 
     margins={}
 
@@ -44,9 +44,11 @@ class dmx_osc:
 
     sensors_audio_val={}
 
+    sensor_types={}
+
     stop_flag = False
 
-    def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={},pairs_audio={},audioback="jack",skip_intro=False):
+    def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=6,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={},pairs_audio={},audioback="jack",skip_intro=False):
         self.oscport=oscport
         self.oscip=oscip
         self.rangetime=rangetime
@@ -82,7 +84,7 @@ class dmx_osc:
             # INIT SEQUENCE ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             #blackout
             print("blackout ...")
-            for c in range(1,100):
+            for c in range(1,200):
                 self.dmx.update_channel(c, 0)
                 self.dmx.run(self.dmxspeed)
             time.sleep(18)
@@ -162,15 +164,16 @@ class dmx_osc:
     def prepareData(self):
         for s in self.sensors:
             
+
             if s["type"]=="static":
                 self.margins[s["id"]]={"min":200.0,"max":-200.0,"tested":0}
                 print('self.margins[s["id"]]',self.margins[s["id"]])
+
+            self.sensor_types[s["id"]]=s["type"]
         
         #new fixture white balance
         newWB=[0.34,0.69,0.58,0.27]
-
-        
-
+    
         #prepare dmx array
         for id in self.fixtures:
             if self.fixtures[id]["type"]=="new":
@@ -249,7 +252,12 @@ class dmx_osc:
         #sensorid=int(adress[-1])
         sensorid=int(adress.split("board")[1])
         #print("sensorid",sensorid)
-        value=list(args)[self.osc_channel]
+        rawvalues=list(args)
+        if self.sensor_types[sensorid]=="static":
+            value=rawvalues[0]
+            #print(value)
+        else:
+            value=np.average(rawvalues[3:5]).item()
         #print(value,adress)
         #print("self.margins",self.margins)
         #print("sensorid",sensorid)
@@ -328,6 +336,10 @@ class dmx_osc:
                     #print(chan,value)
                     finalvalue=int( max(min(int(value), 255), 0)*self.global_dimmer )
                     #print("finalvalue",finalvalue)
+                    if (chan>41 and chan <57):
+                        #old ones
+                        if finalvalue<25:
+                            finalvalue=0
                     self.dmx.update_channel(chan, finalvalue)
       
             if self.dmx:
