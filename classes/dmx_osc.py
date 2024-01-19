@@ -44,6 +44,7 @@ class dmx_osc:
     channeladjustments={}
 
     sensors_audio_val={}
+    sensormin={} #minimum value to be read
 
     sensor_types={}
 
@@ -156,21 +157,19 @@ class dmx_osc:
                 self.sound_process.terminate()
             sys.exit()
             
-        
         fadeout_thread = threading.Thread(target=thread_function)
         fadeout_thread.start()
-        
-       
-
 
     def prepareData(self):
         for s in self.sensors:
-            
-
             if s["type"]=="static":
                 self.margins[s["id"]]={"min":200.0,"max":-200.0,"tested":0}
                 print('self.margins[s["id"]]',self.margins[s["id"]])
-
+            
+            if "minthreshold" in s:
+                self.sensormin[s["id"]]=s["minthreshold"]
+            else:
+                self.sensormin[s["id"]]=0
             self.sensor_types[s["id"]]=s["type"]
         
         #new fixture white balance
@@ -256,10 +255,10 @@ class dmx_osc:
         #print("sensorid",sensorid)
         rawvalues=list(args)
         if self.sensor_types[sensorid]=="static":
-            value=rawvalues[0]
-            #print(value)
+            value=rawvalues[2]
         else:
             value=np.average(rawvalues[3:5]).item()
+            #print(value)
         #print(value,adress)
         #print("self.margins",self.margins)
         #print("sensorid",sensorid)
@@ -294,13 +293,16 @@ class dmx_osc:
                     dmxrange = pair["range"]
                     current_time = time.time()
                     for chan in self.fixtures[pair["fixture"]]["channels"]:
-                        
                         pvalue = abs(value)  # in a range from 0 to 50 approx
                         #pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
+                        #print("pvalue",pvalue)
+                        if pvalue<self.sensormin[sensorid]:
+                            pvalue=0
                         pvalue=self.scale_single_value(pvalue, 0, 50, dmxrange[1], dmxrange[0])
                         self.sensor_last_vals[sensorid].append(self.sensor_val[sensorid])
                         if len(self.sensor_last_vals[sensorid])>self.sensor_last_amount:
                             self.sensor_last_vals[sensorid].pop(0)
+                        #print("din s",pvalue)
                         self.sensor_val[sensorid]=pvalue
         #audio pairs
         if sensorid in self.pairs_audio:

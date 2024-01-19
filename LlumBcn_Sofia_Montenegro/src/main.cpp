@@ -9,7 +9,7 @@
 #include "Adafruit_LC709203F.h"
 
 #define readId 1   //ID
-#define resolution 0.0005//0.05//0.0005//0.05//0.0005
+#define resolution 0.001//0.05//0.0005//0.05//0.0005
 
 #if readId==0
  const char *board = "/board0";
