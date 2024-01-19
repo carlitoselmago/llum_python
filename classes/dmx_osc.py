@@ -49,6 +49,9 @@ class dmx_osc:
     sensor_types={}
 
     stop_flag = False
+    batteries_checked=False
+
+    batterylevel={}
 
     def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={},pairs_audio={},audioback="jack",skip_intro=False,endminutes=15):
         self.oscport=oscport
@@ -257,6 +260,8 @@ class dmx_osc:
         if self.sensor_types[sensorid]=="static":
             value=rawvalues[2]
         else:
+            if not self.batteries_checked :
+                self.batterylevel[sensorid]=rawvalues[6]
             value=np.average(rawvalues[3:5]).item()
             #print(value)
         #print(value,adress)
@@ -276,6 +281,17 @@ class dmx_osc:
                 self.margins[sensorid]["max"]=self.margins[sensorid]["max"]+self.margin_padding
                 self.margins[sensorid]["tested"]+=1
                 print("margins set for sensor",sensorid,self.margins[sensorid])
+                self.batterylevel[sensorid]=rawvalues[6]
+               
+                    
+                if len(self.batterylevel)==len(self.sensors):
+                    #print baterry levels
+                    print("$$$$$$$$$BATTERY LEVELS$$$$$$$$$$$$$")
+                    for bl in self.batterylevel:
+                        print("SENSOR "+str(bl),"::",self.batterylevel[bl]*10,"%")
+                    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                    self.batteries_checked=True
+                #print("battery ",self.batterylevel[sensorid],"%")
             else:
                 #save the data
                 if sensorid in self.pairs:
@@ -291,7 +307,7 @@ class dmx_osc:
             if sensorid in self.pairs:
                 for pair in self.pairs[sensorid]:
                     dmxrange = pair["range"]
-                    current_time = time.time()
+                    #current_time = time.time()
                     for chan in self.fixtures[pair["fixture"]]["channels"]:
                         pvalue = abs(value)  # in a range from 0 to 50 approx
                         #pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])

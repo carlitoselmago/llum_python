@@ -7,7 +7,7 @@ from classes.dmx_osc import dmx_osc
 # Sensors
 sensors = [
    {"type":"static","id":7},
-    {"type":"dinamic","id":1,"minthreshold":10}
+   {"type":"dinamic","id":1,"minthreshold":10}
 ]
 
 #fixtures, key is an unrealted to fixtures or sensors ids, its just for pairs targeting
