@@ -3,7 +3,7 @@ from pythonosc import dispatcher, osc_server
 import threading
 
 # Global variables
-board="/board7"
+board="/board1"
 #ip="172.25.7.255"
 ip="172.25.7.255"
 values = [0.0, 0.0, 0.0,0.0,0.0,0.0,0.0]

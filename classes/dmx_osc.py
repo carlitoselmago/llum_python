@@ -14,7 +14,7 @@ logging.disable(logging.DEBUG)
 class dmx_osc:
 
     oscport = 54321
-    rangetime=5 #iterations it takes to define the margin of static sensors
+    rangetime=11 #iterations it takes to define the margin of static sensors
     dmxspeed=0.0001 #speed in seconds for the dmx loop (the lower the faster)
     movement_threshold=0 # value difference for dinamic sensors
     sound_enabled=True
@@ -96,8 +96,11 @@ class dmx_osc:
             time.sleep(18)
             #INIT FOG
             print("INIT fog lights...")
+            #put RGB to full
             for c in range(62,64):
-                self.dmx.update_channel(c, 255)
+                value=int(255*self.channeladjustments[c])
+                self.dmx.update_channel(c, value)
+            #animate dimmer
             for t in range(1,255):
                 self.dmx.update_channel(61, t)
                 self.dmx.run(self.dmxspeed)
@@ -175,9 +178,13 @@ class dmx_osc:
                 self.sensormin[s["id"]]=0
             self.sensor_types[s["id"]]=s["type"]
         
-        #new fixture white balance
+        #new fixture white balance for new fixtures
         newWB=[0.34,0.69,0.58,0.27]
-    
+
+        #white balance for fog machine
+        fogWB=[1,1,0.9]
+               
+        
         #prepare dmx array
         for id in self.fixtures:
             if self.fixtures[id]["type"]=="new":
@@ -190,6 +197,9 @@ class dmx_osc:
                     except:
                         self.channeladjustments[c]=1.0
                     self.dmxdata[c]=0#255
+            elif self.fixtures[id]["type"]=="fog":
+                for i,c in enumerate(self.fixtures[id]["channels"]):
+                    self.channeladjustments[c]=fogWB[i]
             else:
                 for c in self.fixtures[id]["channels"]:
                     self.channeladjustments[c]=1.0
@@ -288,7 +298,7 @@ class dmx_osc:
                     #print baterry levels
                     print("$$$$$$$$$BATTERY LEVELS$$$$$$$$$$$$$")
                     for bl in self.batterylevel:
-                        print("SENSOR "+str(bl),"::",self.batterylevel[bl]*10,"%")
+                        print("SENSOR "+str(bl),"::",self.batterylevel[bl],"%")
                     print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
                     self.batteries_checked=True
                 #print("battery ",self.batterylevel[sensorid],"%")
@@ -299,6 +309,7 @@ class dmx_osc:
                         #scale data
                         dmxrange=pair["range"]
                         pvalue=self.scale_single_value(value,self.margins[sensorid]["min"],self.margins[sensorid]["max"],dmxrange[0],dmxrange[1])
+                        self.sensor_last_vals[sensorid].append(self.sensor_val[sensorid])
                         pvalue=abs(0+pvalue)
                         self.sensor_val[sensorid]=pvalue
                         
@@ -314,7 +325,7 @@ class dmx_osc:
                         #print("pvalue",pvalue)
                         if pvalue<self.sensormin[sensorid]:
                             pvalue=0
-                        pvalue=self.scale_single_value(pvalue, 0, 50, dmxrange[1], dmxrange[0])
+                        pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
                         self.sensor_last_vals[sensorid].append(self.sensor_val[sensorid])
                         if len(self.sensor_last_vals[sensorid])>self.sensor_last_amount:
                             self.sensor_last_vals[sensorid].pop(0)
@@ -326,7 +337,7 @@ class dmx_osc:
             for pair in self.pairs_audio[sensorid]:
                 dmxrange = pair["range"]
                 pvalue = abs(value)
-                pvalue=self.scale_single_value(pvalue, 0, 50, dmxrange[1], dmxrange[0])
+                pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
                 #print("audio controller pvalue",pvalue)
                 self.sensors_audio_val[pair["control"]]=pvalue
 
@@ -347,8 +358,14 @@ class dmx_osc:
                             smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]]))
                             value+= smooth_value
                         else:
-                            #print("stattic value",sensor["sensorid"])
-                            value += self.sensor_val[sensor["sensorid"]]
+                            #fix for magenta bug on old fixtures
+                            if (chan>41 and chan <57):
+                                value += self.sensor_val[sensor["sensorid"]]
+                            else:
+                                smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]][-6:]))
+                                value+= smooth_value
+                            #print("stattic value",value)
+                            #value += self.sensor_val[sensor["sensorid"]]
                 #white balance adjustment
                 value=value*self.channeladjustments[chan]
                 self.dmxdata[chan]=value
@@ -356,10 +373,13 @@ class dmx_osc:
                     #print(chan,value)
                     finalvalue=int( max(min(int(value), 255), 0)*self.global_dimmer )
                     #print("finalvalue",finalvalue)
+
+                    #fix for magenta bug on old fixtures
                     if (chan>41 and chan <57):
                         #old ones
                         if finalvalue<25:
-                            finalvalue=0
+                            finalvalue=0   
+                    
                     self.dmx.update_channel(chan, finalvalue)
       
             if self.dmx:

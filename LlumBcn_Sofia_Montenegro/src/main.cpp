@@ -8,7 +8,7 @@
 #include "Adafruit_MAX1704X.h"
 #include "Adafruit_LC709203F.h"
 
-#define readId 1   //ID
+#define readId 12   //ID
 #define resolution 0.001//0.05//0.0005//0.05//0.0005
 
 #if readId==0

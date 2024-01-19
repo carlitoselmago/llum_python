@@ -7,41 +7,43 @@ from classes.dmx_osc import dmx_osc
 # Sensors
 sensors = [
     #estaticos
-    {"type":"static","id":7},
-    {"type":"static","id":3},
-    {"type":"static","id":2},
+    {"type":"static","id":4},
+    {"type":"static","id":5},
+    {"type":"static","id":6},
     #{"type":"static","id":10},
     #dinamicos
+    {"type":"dinamic","id":0},
     {"type":"dinamic","id":1},
-   # {"type":"dinamic","id":1},
-   # {"type":"dinamic","id":3},
-   # {"type":"dinamic","id":4},
+    {"type":"dinamic","id":2},
+    {"type":"dinamic","id":3},
+    
 ]
 
 
 #fixtures, key is an unrealted to fixtures or sensors ids, its just for pairs targeting
 fixtures={
-    0:{"channels":list(range(1,59)),"type":"old"},#list(range(1,56))
-    #1:{"channels":[1,2,3,4],"type":"new"},
-    #2:{"channels":[5,6,7,8],"type":"new"},
-    #3:{"channels":[9,10,11,12],"type":"new"},
-    #4:{"channels":[13,14,15,16],"type":"new"},
-    #1:{"channels":list(range(1,16)),"type":"new"},
-    #2:{"channels":list(range(28,35)),"type":"new"}
+    0:{"channels":list(range(42,57)),"type":"old"},#list(range(1,56))
+
+    1:{"channels":list(range(1,17)),"type":"new"}, # fila izq new
+    2:{"channels":list(range(20,36)),"type":"new"}, #fila der new
+
+    #3:{"channels":list(range(61,64)),"type":"fog"}
 
 }
-
+allfixtures=[{"fixture":0,"range":[255,0]},
+       {"fixture":1,"range":[255,0]},
+        {"fixture":2,"range":[255,0]}]
 # pairs of sensors and fixtures, the key = sensor
 pairs={
     #passive ###################################3
-    #3:[{"fixture":1,"range":[0,40]}],
-    7:[{"fixture":0,"range":[0,40]}],
-    #2:[{"fixture":2,"range":[0,40]}],
+    4:[{"fixture":0,"range":[10,60]}],
+    5:[{"fixture":1,"range":[10,60]}],
+    6:[{"fixture":2,"range":[10,60]}],
     #direct ####################################33
-    1:[{"fixture":0,"range":[255,0]}]
-
-    
-   
+    0:allfixtures,
+    1:[{"fixture":1,"range":[255,0]}],
+    2:[{"fixture":2,"range":[255,0]}],
+    #3:allfixtures
 }
 
 #for i in range(1,4):
@@ -53,10 +55,10 @@ pairs={
 
 #pairs of sensors and audio controllers, audio has 0,1,2,3 controllers as targets
 pairs_audio={
-   2:[{"control":0,"range":[100,20000]}],
+    0:[{"control":0,"range":[10,20000]}],
     1:[{"control":1,"range":[0.1,1]}],
-    3:[{"control":2,"range":[0.1,1]}],
-    4:[{"control":3,"range":[0.1,1]}]
+    2:[{"control":2,"range":[0.1,1]}],
+    3:[{"control":3,"range":[0.1,1]}]
    # 0:[{"control":2,"range":[0.9,1]}]
 }
 
@@ -72,8 +74,8 @@ DMXOSC=dmx_osc(oscport=54321,
                pairs=pairs,
                pairs_audio=pairs_audio,
                audioback="jack",
-               skip_intro=False,
-               endminutes=4)
+               skip_intro=True,
+               endminutes=400)
 
 
 #################################################################################
