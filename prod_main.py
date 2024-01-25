@@ -80,7 +80,7 @@ pairs={
     3: adelante,
     4:[ {"fixture":1,"range":[1455,0]},
         {"fixture":4,"range":[1455,0]},
-       {"fixture":7,"range":[1455,0]},
+       {"fixture":7,"range":[100,0]},
        {"fixture":10,"range":[14255,0]},
        {"fixture":12,"range":[1455,0]}], 
     5:[ {"fixture":2,"range":[200,0]}, 
@@ -127,6 +127,6 @@ DMXOSC=dmx_osc(oscport=54321,
                pairs_audio=pairs_audio,
                audioback="jack",
                skip_intro=True,
-               endminutes=400)
+               endminutes=5)
 
 #################################################################################

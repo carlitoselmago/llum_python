@@ -15,7 +15,7 @@ class dmx_osc:
 
     oscport = 54321
     rangetime=11 #iterations it takes to define the margin of static sensors
-    dmxspeed=0.0001 #speed in seconds for the dmx loop (the lower the faster)
+    dmxspeed=0.0005 #speed in seconds for the dmx loop (the lower the faster)
     movement_threshold=0 # value difference for dinamic sensors
     sound_enabled=True
     
@@ -36,7 +36,7 @@ class dmx_osc:
     margins={}
 
     sensor_val={}
-    sensor_last_amount=5
+    sensor_last_amount=10
     sensor_last_vals={}
 
     dmxdata={}
@@ -97,20 +97,25 @@ class dmx_osc:
             #INIT FOG
             print("INIT fog lights...")
             #put RGB to full
-            for c in range(62,64):
-                value=int(255*self.channeladjustments[c])
-                self.dmx.update_channel(c, value)
+            for c in range(62,65):
+                value=255
+                if c==64:
+                    value=255*0.85
+                #value=int(255*self.channeladjustments[c])
+                #value=255
+                self.dmx.update_channel(c, int(value))
             #animate dimmer
-            for t in range(1,255):
-                self.dmx.update_channel(61, t)
-                self.dmx.run(self.dmxspeed)
-                time.sleep(0.04)
-            #self.dmx.update_channel(61, 255)
-            time.sleep(2)
             print("init fog...")
             self.dmx.update_channel(60, 255)
             
             self.dmx.run(self.dmxspeed)
+            for t in range(1,255):
+                self.dmx.update_channel(61, t)
+                self.dmx.run(self.dmxspeed)
+                time.sleep(0.1)
+            #self.dmx.update_channel(61, 255)
+            #time.sleep(2)
+            
             time.sleep(30)
             print("stop fog...")
             #stop fog
@@ -132,6 +137,12 @@ class dmx_osc:
         self.dmx_thread = threading.Thread(target=self.sendDMXLoop)
         self.dmx_thread.start()
 
+        #fadein de dimmer general
+        self.global_dimmer=0.0
+        for t in range(0,100):
+            self.global_dimmer=(t/10.0)
+            time.sleep(0.04)
+
         #end timer thread
 
         self.end()
@@ -146,7 +157,7 @@ class dmx_osc:
                 self.global_dimmer-=0.01
                 if self.global_dimmer<0.1:
                     break
-                time.sleep(0.04)
+                time.sleep(0.08)
             print("END ::::::::::::::::::::::::::::::::")
             self.stop_flag=True
             
@@ -360,9 +371,11 @@ class dmx_osc:
                         else:
                             #fix for magenta bug on old fixtures
                             if (chan>41 and chan <57):
-                                value += self.sensor_val[sensor["sensorid"]]
+                                smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]][-3:]))
+                                value+= smooth_value
+                                #value += self.sensor_val[sensor["sensorid"]]
                             else:
-                                smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]][-6:]))
+                                smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]][-8:]))
                                 value+= smooth_value
                             #print("stattic value",value)
                             #value += self.sensor_val[sensor["sensorid"]]
