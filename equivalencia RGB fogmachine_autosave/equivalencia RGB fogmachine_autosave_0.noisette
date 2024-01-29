@@ -1,0 +1,1177 @@
+{
+  "metaData": {
+    "version": "1.9.17",
+    "versionNumber": 67857
+  },
+  "projectSettings": {
+    "containers": {
+      "dashboardSettings": {
+        "parameters": [
+          {
+            "value": "",
+            "controlAddress": "/showDashboardOnStartup",
+            "enabled": false
+          }
+        ]
+      },
+      "customDefinitions": {
+      }
+    }
+  },
+  "dashboardManager": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "parrots": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "layout": {
+    "mainLayout": {
+      "type": 1,
+      "width": 1872,
+      "height": 1111,
+      "direction": 2,
+      "shifters": [
+        {
+          "type": 1,
+          "width": 1872,
+          "height": 1111,
+          "direction": 2,
+          "shifters": [
+            {
+              "type": 1,
+              "width": 1872,
+              "height": 365,
+              "direction": 1,
+              "shifters": [
+                {
+                  "type": 0,
+                  "width": 258,
+                  "height": 365,
+                  "currentContent": "Modules",
+                  "tabs": [
+                    {
+                      "name": "Modules"
+                    }
+                  ]
+                },
+                {
+                  "type": 0,
+                  "width": 1117,
+                  "height": 365,
+                  "currentContent": "State Machine",
+                  "tabs": [
+                    {
+                      "name": "State Machine"
+                    },
+                    {
+                      "name": "Dashboard"
+                    },
+                    {
+                      "name": "Module Router"
+                    },
+                    {
+                      "name": "Morpher"
+                    }
+                  ]
+                },
+                {
+                  "type": 0,
+                  "width": 485,
+                  "height": 365,
+                  "currentContent": "Inspector",
+                  "tabs": [
+                    {
+                      "name": "Inspector"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": 1,
+              "width": 1872,
+              "height": 740,
+              "direction": 1,
+              "shifters": [
+                {
+                  "type": 0,
+                  "width": 178,
+                  "height": 740,
+                  "currentContent": "Sequences",
+                  "tabs": [
+                    {
+                      "name": "Sequences"
+                    }
+                  ]
+                },
+                {
+                  "type": 0,
+                  "width": 1688,
+                  "height": 740,
+                  "currentContent": "Sequence Editor",
+                  "tabs": [
+                    {
+                      "name": "Sequence Editor"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "windows": null
+  },
+  "modules": {
+    "items": [
+      {
+        "niceName": "DMX",
+        "type": "DMX",
+        "scripts": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "params": {
+          "parameters": [
+            {
+              "value": "Enttec DMX Pro",
+              "controlAddress": "/dmxType"
+            },
+            {
+              "value": false,
+              "controlAddress": "/sendOnChangeOnly"
+            },
+            {
+              "value": false,
+              "controlAddress": "/useMulticast"
+            }
+          ],
+          "containers": {
+            "dmxPro": {
+              "parameters": [
+                {
+                  "value": "ENTTEC DMX USB PRO EN397223(SN : EN397223)",
+                  "controlAddress": "/port"
+                }
+              ],
+              "containers": {
+                "input": {
+                  "parameters": [
+                    {
+                      "value": false,
+                      "controlAddress": "/enabled"
+                    }
+                  ],
+                  "owned": true,
+                  "niceName": "Input"
+                },
+                "output": {
+                  "owned": true,
+                  "niceName": "Output"
+                }
+              }
+            },
+            "outputUniverses": {
+              "items": [
+                {
+                  "parameters": [
+                    {
+                      "value": 1,
+                      "hexMode": false,
+                      "controlAddress": "/universe"
+                    }
+                  ],
+                  "niceName": "Universe",
+                  "type": "DMXUniverse"
+                }
+              ],
+              "viewOffset": [
+                0,
+                0
+              ],
+              "viewZoom": 1.0
+            },
+            "pass_through": {
+            }
+          }
+        },
+        "templates": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "device": {
+          "parameters": [
+            {
+              "value": "ENTTEC DMX USB PRO EN397223(SN : EN397223)",
+              "controlAddress": "/port"
+            }
+          ],
+          "containers": {
+            "input": {
+              "parameters": [
+                {
+                  "value": false,
+                  "controlAddress": "/enabled"
+                }
+              ],
+              "owned": true,
+              "niceName": "Input"
+            },
+            "output": {
+              "owned": true,
+              "niceName": "Output"
+            }
+          }
+        },
+        "universes": {
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        }
+      }
+    ],
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "customVariables": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "states": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0,
+    "transitions": {
+      "hideInEditor": true,
+      "viewOffset": [
+        0,
+        0
+      ],
+      "viewZoom": 1.0
+    },
+    "comments": {
+      "hideInEditor": true,
+      "viewOffset": [
+        0,
+        0
+      ],
+      "viewZoom": 1.0
+    }
+  },
+  "sequences": {
+    "items": [
+      {
+        "parameters": [
+          {
+            "value": "",
+            "controlAddress": "/ltcSyncModule",
+            "enabled": false
+          }
+        ],
+        "niceName": "Sequence",
+        "type": "Sequence",
+        "layers": {
+          "hideInEditor": true,
+          "items": [
+            {
+              "parameters": [
+                {
+                  "value": 120.0,
+                  "controlAddress": "/listSize"
+                },
+                {
+                  "value": 120,
+                  "hexMode": false,
+                  "controlAddress": "/uiHeight"
+                }
+              ],
+              "niceName": "humo dimmer",
+              "containers": {
+                "automation": {
+                  "parameters": [
+                    {
+                      "value": 30.0,
+                      "controlAddress": "/length"
+                    },
+                    {
+                      "value": 2.539999961853027,
+                      "controlAddress": "/position"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/viewValueRange"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/range",
+                      "enabled": true
+                    }
+                  ],
+                  "hideInEditor": true,
+                  "hideInRemoteControl": false,
+                  "items": [
+                    {
+                      "parameters": [
+                        {
+                          "value": 2.563559293746948,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 1.0,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key",
+                      "containers": {
+                        "easing": {
+                        }
+                      },
+                      "type": "Key"
+                    }
+                  ],
+                  "viewOffset": [
+                    0,
+                    0
+                  ],
+                  "viewZoom": 1.0
+                },
+                "recorder": {
+                  "parameters": [
+                    {
+                      "value": "",
+                      "controlAddress": "/inputValue"
+                    }
+                  ],
+                  "editorIsCollapsed": true
+                },
+                "mapping": {
+                  "niceName": "Mapping",
+                  "type": "Mapping",
+                  "im": {
+                    "hideInEditor": true,
+                    "items": [
+                      {
+                        "parameters": [
+                          {
+                            "value": "",
+                            "controlAddress": "/inputValue"
+                          }
+                        ],
+                        "niceName": "Input Value",
+                        "type": "Input Value"
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "params": {
+                    "parameters": [
+                      {
+                        "value": 50,
+                        "hexMode": false,
+                        "controlAddress": "/updateRate"
+                      },
+                      {
+                        "value": false,
+                        "controlAddress": "/sendOnOutputChangeOnly"
+                      }
+                    ],
+                    "editorIsCollapsed": true
+                  },
+                  "filters": {
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "outputs": {
+                    "items": [
+                      {
+                        "niceName": "MappingOutput",
+                        "type": "BaseItem",
+                        "commandModule": "dmx",
+                        "commandPath": "",
+                        "commandType": "Set value",
+                        "command": {
+                          "parameters": [
+                            {
+                              "value": "/universe",
+                              "controlAddress": "/universe"
+                            },
+                            {
+                              "value": 61,
+                              "hexMode": false,
+                              "controlAddress": "/channel"
+                            },
+                            {
+                              "value": true,
+                              "controlAddress": "/remapTo0_255"
+                            }
+                          ],
+                          "paramLinks": {
+                            "value": {
+                              "linkType": 1,
+                              "mappingValueIndex": 0
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  }
+                }
+              },
+              "type": "Mapping"
+            },
+            {
+              "parameters": [
+                {
+                  "value": 120.0,
+                  "controlAddress": "/listSize"
+                },
+                {
+                  "value": 120,
+                  "hexMode": false,
+                  "controlAddress": "/uiHeight"
+                }
+              ],
+              "niceName": "humo R",
+              "containers": {
+                "automation": {
+                  "parameters": [
+                    {
+                      "value": 30.0,
+                      "controlAddress": "/length"
+                    },
+                    {
+                      "value": 2.539999961853027,
+                      "controlAddress": "/position"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/viewValueRange"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/range",
+                      "enabled": true
+                    }
+                  ],
+                  "hideInEditor": true,
+                  "hideInRemoteControl": false,
+                  "items": [
+                    {
+                      "parameters": [
+                        {
+                          "value": 1.610169410705566,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 1.0,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key",
+                      "containers": {
+                        "easing": {
+                        }
+                      },
+                      "type": "Key"
+                    }
+                  ],
+                  "viewOffset": [
+                    0,
+                    0
+                  ],
+                  "viewZoom": 1.0
+                },
+                "recorder": {
+                  "parameters": [
+                    {
+                      "value": "",
+                      "controlAddress": "/inputValue"
+                    }
+                  ],
+                  "editorIsCollapsed": true
+                },
+                "mapping": {
+                  "niceName": "Mapping",
+                  "type": "Mapping",
+                  "im": {
+                    "hideInEditor": true,
+                    "items": [
+                      {
+                        "parameters": [
+                          {
+                            "value": "",
+                            "controlAddress": "/inputValue"
+                          }
+                        ],
+                        "niceName": "Input Value",
+                        "type": "Input Value"
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "params": {
+                    "parameters": [
+                      {
+                        "value": 50,
+                        "hexMode": false,
+                        "controlAddress": "/updateRate"
+                      },
+                      {
+                        "value": false,
+                        "controlAddress": "/sendOnOutputChangeOnly"
+                      }
+                    ],
+                    "editorIsCollapsed": true
+                  },
+                  "filters": {
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "outputs": {
+                    "items": [
+                      {
+                        "niceName": "MappingOutput",
+                        "type": "BaseItem",
+                        "commandModule": "dmx",
+                        "commandPath": "",
+                        "commandType": "Set value",
+                        "command": {
+                          "parameters": [
+                            {
+                              "value": "/universe",
+                              "controlAddress": "/universe"
+                            },
+                            {
+                              "value": 62,
+                              "hexMode": false,
+                              "controlAddress": "/channel"
+                            },
+                            {
+                              "value": true,
+                              "controlAddress": "/remapTo0_255"
+                            }
+                          ],
+                          "paramLinks": {
+                            "value": {
+                              "linkType": 1,
+                              "mappingValueIndex": 0
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  }
+                }
+              },
+              "type": "Mapping"
+            },
+            {
+              "parameters": [
+                {
+                  "value": 120.0,
+                  "controlAddress": "/listSize"
+                },
+                {
+                  "value": 120,
+                  "hexMode": false,
+                  "controlAddress": "/uiHeight"
+                }
+              ],
+              "niceName": "humo G",
+              "containers": {
+                "automation": {
+                  "parameters": [
+                    {
+                      "value": 30.0,
+                      "controlAddress": "/length"
+                    },
+                    {
+                      "value": 2.539999961853027,
+                      "controlAddress": "/position"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/viewValueRange"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/range",
+                      "enabled": true
+                    }
+                  ],
+                  "hideInEditor": true,
+                  "hideInRemoteControl": false,
+                  "items": [
+                    {
+                      "parameters": [
+                        {
+                          "value": 1.440677881240845,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 1.0,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key",
+                      "containers": {
+                        "easing": {
+                        }
+                      },
+                      "type": "Key"
+                    }
+                  ],
+                  "viewOffset": [
+                    0,
+                    0
+                  ],
+                  "viewZoom": 1.0
+                },
+                "recorder": {
+                  "parameters": [
+                    {
+                      "value": "",
+                      "controlAddress": "/inputValue"
+                    }
+                  ],
+                  "editorIsCollapsed": true
+                },
+                "mapping": {
+                  "niceName": "Mapping",
+                  "type": "Mapping",
+                  "im": {
+                    "hideInEditor": true,
+                    "items": [
+                      {
+                        "parameters": [
+                          {
+                            "value": "",
+                            "controlAddress": "/inputValue"
+                          }
+                        ],
+                        "niceName": "Input Value",
+                        "type": "Input Value"
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "params": {
+                    "parameters": [
+                      {
+                        "value": 50,
+                        "hexMode": false,
+                        "controlAddress": "/updateRate"
+                      },
+                      {
+                        "value": false,
+                        "controlAddress": "/sendOnOutputChangeOnly"
+                      }
+                    ],
+                    "editorIsCollapsed": true
+                  },
+                  "filters": {
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "outputs": {
+                    "items": [
+                      {
+                        "niceName": "MappingOutput",
+                        "type": "BaseItem",
+                        "commandModule": "dmx",
+                        "commandPath": "",
+                        "commandType": "Set value",
+                        "command": {
+                          "parameters": [
+                            {
+                              "value": "/universe",
+                              "controlAddress": "/universe"
+                            },
+                            {
+                              "value": 63,
+                              "hexMode": false,
+                              "controlAddress": "/channel"
+                            },
+                            {
+                              "value": true,
+                              "controlAddress": "/remapTo0_255"
+                            }
+                          ],
+                          "paramLinks": {
+                            "value": {
+                              "linkType": 1,
+                              "mappingValueIndex": 0
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  }
+                }
+              },
+              "type": "Mapping"
+            },
+            {
+              "parameters": [
+                {
+                  "value": 120.0,
+                  "controlAddress": "/listSize"
+                },
+                {
+                  "value": 120,
+                  "hexMode": false,
+                  "controlAddress": "/uiHeight"
+                }
+              ],
+              "niceName": "humo B",
+              "containers": {
+                "automation": {
+                  "parameters": [
+                    {
+                      "value": 30.0,
+                      "controlAddress": "/length"
+                    },
+                    {
+                      "value": 2.539999961853027,
+                      "controlAddress": "/position"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/viewValueRange"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/range",
+                      "enabled": true
+                    }
+                  ],
+                  "hideInEditor": true,
+                  "hideInRemoteControl": false,
+                  "items": [
+                    {
+                      "parameters": [
+                        {
+                          "value": 1.122881531715393,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 0.9083333611488342,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key",
+                      "containers": {
+                        "easing": {
+                        }
+                      },
+                      "type": "Key"
+                    }
+                  ],
+                  "viewOffset": [
+                    0,
+                    0
+                  ],
+                  "viewZoom": 1.0
+                },
+                "recorder": {
+                  "parameters": [
+                    {
+                      "value": "",
+                      "controlAddress": "/inputValue"
+                    }
+                  ],
+                  "editorIsCollapsed": true
+                },
+                "mapping": {
+                  "niceName": "Mapping",
+                  "type": "Mapping",
+                  "im": {
+                    "hideInEditor": true,
+                    "items": [
+                      {
+                        "parameters": [
+                          {
+                            "value": "",
+                            "controlAddress": "/inputValue"
+                          }
+                        ],
+                        "niceName": "Input Value",
+                        "type": "Input Value"
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "params": {
+                    "parameters": [
+                      {
+                        "value": 50,
+                        "hexMode": false,
+                        "controlAddress": "/updateRate"
+                      },
+                      {
+                        "value": false,
+                        "controlAddress": "/sendOnOutputChangeOnly"
+                      }
+                    ],
+                    "editorIsCollapsed": true
+                  },
+                  "filters": {
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "outputs": {
+                    "items": [
+                      {
+                        "niceName": "MappingOutput",
+                        "type": "BaseItem",
+                        "commandModule": "dmx",
+                        "commandPath": "",
+                        "commandType": "Set value",
+                        "command": {
+                          "parameters": [
+                            {
+                              "value": "/universe",
+                              "controlAddress": "/universe"
+                            },
+                            {
+                              "value": 64,
+                              "hexMode": false,
+                              "controlAddress": "/channel"
+                            },
+                            {
+                              "value": true,
+                              "controlAddress": "/remapTo0_255"
+                            }
+                          ],
+                          "paramLinks": {
+                            "value": {
+                              "linkType": 1,
+                              "mappingValueIndex": 0
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  }
+                }
+              },
+              "type": "Mapping"
+            },
+            {
+              "parameters": [
+                {
+                  "value": 120.0,
+                  "controlAddress": "/listSize"
+                },
+                {
+                  "value": 120,
+                  "hexMode": false,
+                  "controlAddress": "/uiHeight"
+                }
+              ],
+              "niceName": "old",
+              "containers": {
+                "automation": {
+                  "parameters": [
+                    {
+                      "value": 30.0,
+                      "controlAddress": "/length"
+                    },
+                    {
+                      "value": 2.539999961853027,
+                      "controlAddress": "/position"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/viewValueRange"
+                    },
+                    {
+                      "value": [
+                        0.0,
+                        1.0
+                      ],
+                      "controlAddress": "/range",
+                      "enabled": true
+                    }
+                  ],
+                  "hideInEditor": true,
+                  "hideInRemoteControl": false,
+                  "items": [
+                    {
+                      "parameters": [
+                        {
+                          "value": 1.440677881240845,
+                          "controlAddress": "/position"
+                        },
+                        {
+                          "value": 1.0,
+                          "controlAddress": "/value"
+                        },
+                        {
+                          "value": "Bezier",
+                          "controlAddress": "/easingType"
+                        }
+                      ],
+                      "niceName": "Key",
+                      "containers": {
+                        "easing": {
+                        }
+                      },
+                      "type": "Key"
+                    }
+                  ],
+                  "viewOffset": [
+                    0,
+                    0
+                  ],
+                  "viewZoom": 1.0
+                },
+                "recorder": {
+                  "parameters": [
+                    {
+                      "value": "",
+                      "controlAddress": "/inputValue"
+                    }
+                  ],
+                  "editorIsCollapsed": true
+                },
+                "mapping": {
+                  "niceName": "Mapping",
+                  "type": "Mapping",
+                  "im": {
+                    "hideInEditor": true,
+                    "items": [
+                      {
+                        "parameters": [
+                          {
+                            "value": "",
+                            "controlAddress": "/inputValue"
+                          }
+                        ],
+                        "niceName": "Input Value",
+                        "type": "Input Value"
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "params": {
+                    "parameters": [
+                      {
+                        "value": 50,
+                        "hexMode": false,
+                        "controlAddress": "/updateRate"
+                      },
+                      {
+                        "value": false,
+                        "controlAddress": "/sendOnOutputChangeOnly"
+                      }
+                    ],
+                    "editorIsCollapsed": true
+                  },
+                  "filters": {
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  },
+                  "outputs": {
+                    "items": [
+                      {
+                        "niceName": "MappingOutput",
+                        "type": "BaseItem",
+                        "commandModule": "dmx",
+                        "commandPath": "",
+                        "commandType": "Set range",
+                        "command": {
+                          "parameters": [
+                            {
+                              "value": "/universe",
+                              "controlAddress": "/universe"
+                            },
+                            {
+                              "value": 42,
+                              "hexMode": false,
+                              "controlAddress": "/startChannel"
+                            },
+                            {
+                              "value": 56,
+                              "hexMode": false,
+                              "controlAddress": "/endChannel"
+                            },
+                            {
+                              "value": true,
+                              "controlAddress": "/remapTo0_255"
+                            }
+                          ],
+                          "paramLinks": {
+                            "value": {
+                              "linkType": 1,
+                              "mappingValueIndex": 0
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "viewOffset": [
+                      0,
+                      0
+                    ],
+                    "viewZoom": 1.0
+                  }
+                }
+              },
+              "type": "Mapping"
+            }
+          ],
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "cues": {
+          "hideInEditor": true,
+          "viewOffset": [
+            0,
+            0
+          ],
+          "viewZoom": 1.0
+        },
+        "editing": true
+      }
+    ],
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  },
+  "routers": {
+    "viewOffset": [
+      0,
+      0
+    ],
+    "viewZoom": 1.0
+  }
+}
