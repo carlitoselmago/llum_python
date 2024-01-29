@@ -1,6 +1,7 @@
 from pythonosc import dispatcher, osc_server
 from pyDMXController import pyDMXController
 from classes.pyo import Sound
+from classes.webcontrol import WebController
 import numpy as np
 import threading
 from multiprocessing import Process, Queue, Value
@@ -10,6 +11,7 @@ import time
 import random
 import logging
 logging.disable(logging.DEBUG)
+
 
 class dmx_osc:
 
@@ -21,6 +23,7 @@ class dmx_osc:
     
     endminutes=4 # the time this code should wait till it starts to a fade out
     global_dimmer=1.0
+    webcontrol=True
 
     ###################
 
@@ -51,7 +54,11 @@ class dmx_osc:
     stop_flag = False
     batteries_checked=False
 
+    secondsleft=100000000000000000000000
+
     batterylevel={}
+
+    
 
     def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={},pairs_audio={},audioback="jack",skip_intro=False,endminutes=15):
         self.oscport=oscport
@@ -66,6 +73,7 @@ class dmx_osc:
         self.pairs=pairs 
         self.pairs_audio=pairs_audio
         self.endminutes=endminutes# the time this code should wait till it starts to a fade out
+        self.secondsleft=endminutes*60
 
         if self.sound_enabled: 
             #self.Sound=Sound(self,audiodeviceindex)
@@ -143,14 +151,24 @@ class dmx_osc:
             self.global_dimmer=(t/10.0)
             time.sleep(0.04)
 
-        #end timer thread
+        if self.webcontrol:
+            self.WebController=WebController(self)
+            self.webcontrolthread = threading.Thread(target=self.WebController.run)
+            self.webcontrolthread.daemon=True
+            self.webcontrolthread.start()
 
+        #end timer thread
         self.end()
         
     def end(self):
         
         def thread_function():
-            time.sleep(self.endminutes * 60)
+            while self.secondsleft > 0:
+                self.secondsleft-=1
+                time.sleep(1)
+            #for second in self.endminutes * 60:
+                time.sleep(1) 
+            #time.sleep(self.endminutes * 60)
             #END
             print("init fadeout end.....")
             for t in range(1,255):
@@ -161,7 +179,7 @@ class dmx_osc:
             print("END ::::::::::::::::::::::::::::::::")
             self.stop_flag=True
             
-
+            time.sleep(10) # give 10 extra seconds for enttec faster devices
             #stop all threads
             self.server.shutdown()
             self.OSC_thread.join()
