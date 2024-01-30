@@ -2,7 +2,7 @@ from pyo import *
 from time import sleep
 
 # Initialize Pyo server
-sr=44100, nchnls=2, buffersize=256, duplex=1, audio='portaudio', jackname='pyo')
+s=Server(sr=44100, nchnls=2, buffersize=256, duplex=1, audio='portaudio', jackname='pyo')
 #s = Server()
 sleep(5)
 pa_list_devices()
