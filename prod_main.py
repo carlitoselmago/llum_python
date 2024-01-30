@@ -16,7 +16,7 @@ sensors = [
     {"type":"dinamic","id":0},
     {"type":"dinamic","id":1},
     #{"type":"dinamic","id":2}, -> usado para sala pequeña
-    {"type":"dinamic","id":3},
+    {"type":"dinamic","id":12}, # EX 3
     {"type":"dinamic","id":4},
     {"type":"dinamic","id":5} # CORTINA
 ]
@@ -41,6 +41,9 @@ fixtures={
     12:{"channels":[24,25,26,27],"type":"new"},
     13:{"channels":[28,29,30,31],"type":"new"},
 
+    #balcon
+    13:{"channels":[30,31,30,31],"type":"old"},
+
     #14:{"channels":[61,62,63,64],"type":"new"},
     #60:{"channels":[60],"type":"old"},
 }
@@ -64,6 +67,8 @@ der=[
      {"fixture":12,"range":[1455,0]},
       {"fixture":13,"range":[1455,0]},
 ]
+
+
 # pairs of sensors and fixtures, the key = sensor
 pairs={
      #REPOSOS
@@ -109,10 +114,10 @@ pairs={
 
 #pairs of sensors and audio controllers, audio has 0,1,2,3 controllers as targets
 pairs_audio={
-   5:[{"control":0,"range":[10,20000]}],
+   12:[{"control":0,"range":[10,20000]}], #ex 5
     1:[{"control":1,"range":[0.1,1]}],
     2:[{"control":2,"range":[0.1,1]}],
-    3:[{"control":3,"range":[0.1,1]}]
+    3:[{"control":3,"range":[1,0.1]}] 
 }
 
 DMXOSC=dmx_osc(oscport=54321,
@@ -126,7 +131,7 @@ DMXOSC=dmx_osc(oscport=54321,
                pairs=pairs,
                pairs_audio=pairs_audio,
                audioback="jack",
-               skip_intro=False,
+               skip_intro=True,
                endminutes=5)
 
 #################################################################################

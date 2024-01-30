@@ -1,5 +1,5 @@
 from pythonosc import dispatcher, osc_server
-from pyDMXController.pyDMXController import pyDMXController
+from pyDMXController import pyDMXController
 from classes.pyo import Sound
 from classes.webcontrol import WebController
 import numpy as np
@@ -301,11 +301,16 @@ class dmx_osc:
         sensorid=int(adress.split("board")[1])
         #print("sensorid",sensorid)
         rawvalues=list(args)
+
+        #print("LLLLLLLLLLLLLLLLLLLLLLLL")
+        #print("battery",rawvalues[6],"SENSOR:",sensorid)
+        #print("LLLLLLLLLLLLLLLLLLLLLLLLLL")
         if self.sensor_types[sensorid]=="static":
             value=rawvalues[2]
         else:
             if not self.batteries_checked :
                 self.batterylevel[sensorid]=rawvalues[6]
+                #print("battery",self.batterylevel[sensorid],sensorid)
             value=np.average(rawvalues[3:5]).item()
             #print(value)
         #print(value,adress)
@@ -326,7 +331,7 @@ class dmx_osc:
                 self.margins[sensorid]["tested"]+=1
                 print("margins set for sensor",sensorid,self.margins[sensorid])
                 self.batterylevel[sensorid]=rawvalues[6]
-               
+                
                     
                 if len(self.batterylevel)==len(self.sensors):
                     #print baterry levels
