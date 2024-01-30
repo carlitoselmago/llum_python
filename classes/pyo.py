@@ -122,7 +122,7 @@ class Sound:
                         print("freq.value",freq.value)
                         freq.value=val#self.freqval
                         """
-                        freq.value=self.smoothingFreq.smooth(sensor_val,alpha_rising=0.2, alpha_falling=0.7)
+                        freq.value=self.smoothingFreq.smooth(sensor_val,alpha_rising=0.001, alpha_falling=0.8)
                         print("processed",freq.value,"\t","\t","raw",sensor_val)
                    
                     if index==1:
