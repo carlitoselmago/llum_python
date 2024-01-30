@@ -312,7 +312,7 @@ class dmx_osc:
                 self.batterylevel[sensorid]=rawvalues[6]
                 #print("battery",self.batterylevel[sensorid],sensorid)
             value=np.average(rawvalues[3:5]).item()
-            #print(value)
+            #print("board"+str(sensorid),"value",value)
         #print(value,adress)
         #print("self.margins",self.margins)
         #print("sensorid",sensorid)

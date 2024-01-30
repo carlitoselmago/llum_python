@@ -122,8 +122,10 @@ pairs_audio={
 
 DMXOSC=dmx_osc(oscport=54321,
             oscip="172.25.7.255",
-               dmxport='/dev/ttyUSB0',
-               device_type='enttec',
+               #dmxport='/dev/ttyUSB0',
+               #device_type='enttec',
+               dmxport='/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A50285BI-if00-port0',
+               device_type='ftdi',
                margin_padding=0.2,
                audiodeviceindex=3,
                sensors=sensors,

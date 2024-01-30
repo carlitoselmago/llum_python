@@ -5,6 +5,7 @@ import numpy as np
 from time import sleep
 import sys
 import threading
+from classes.smoothing import AsymmetricExponentialSmoothing
 
 class Sound:
 
@@ -21,6 +22,8 @@ class Sound:
         self.dmxosc=dmxosc
         self.audiodeviceindex=audiodeviceindex
         self.prepareData()
+
+        self.smoothingFreq=AsymmetricExponentialSmoothing()
 
     def avg(self,lst):
         lst=list(lst)
@@ -100,6 +103,8 @@ class Sound:
                         
                         #all2.feedback=sensor_val#self.getData(index)
                         #filt.freq=self.getData(index)
+
+                        """
                         val=self.getData(index) 
                         try:
                             difference=abs(self.controldata[index][-1]-self.controldata[index][-2])
@@ -116,7 +121,9 @@ class Sound:
                             pass
                         print("freq.value",freq.value)
                         freq.value=val#self.freqval
-                        pass
+                        """
+                        freq.value=self.smoothingFreq.smooth(sensor_val,alpha_rising=0.2, alpha_falling=0.7)
+                        print("processed",freq.value,"\t","\t","raw",sensor_val)
                    
                     if index==1:
                         pass
