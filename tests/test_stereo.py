@@ -7,7 +7,7 @@ s=Server(sr=44100, nchnls=2, buffersize=256, duplex=1, audio='jack')
 sleep(5)
 pa_list_devices()
 # Set the input/output device to device number 12
-s.setInOutDevice(2)
+s.setInOutDevice(0)
 
 # Boot the server
 s.boot()
