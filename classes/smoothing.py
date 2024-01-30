@@ -1,31 +1,28 @@
 class AsymmetricExponentialSmoothing:
     def __init__(self):
-        """
-        Initialize the smoothing factors.
-        :param alpha_rising: Smoothing factor for rising edge (0.0 to 1.0).
-        :param alpha_falling: Smoothing factor for falling edge (1.0 to 0.0).
-        """
-        #self.alpha_rising = alpha_rising
-        #self.alpha_falling = alpha_falling
         self.current_value = 0.0
+        self.ease_in_progress = 0.0
+        self.ease_out_progress = 0.0
 
-    def smooth(self, new_value,alpha_rising,alpha_falling):
-        """
-        Apply the smoothing logic based on the direction of the value change.
-        :param new_value: The new sensor value.
-        :return: Smoothed value.
-        """
+    def ease_in(self, progress):
+        # Quadratic ease in
+        return progress ** 2
+
+    def ease_out(self, progress):
+        # Quadratic ease out
+        return progress * (2 - progress)
+
+    def smooth(self, new_value, alpha_rising, alpha_falling, ease_duration=1.0):
         if new_value > self.current_value:
-            # When value is rising, use alpha_rising
-            self.current_value += alpha_rising * (new_value - self.current_value)
+            # When value is rising, use alpha_rising with ease in
+            self.ease_in_progress = min(1.0, self.ease_in_progress + (1 / ease_duration))
+            eased_alpha = alpha_rising * self.ease_in(self.ease_in_progress)
+            self.current_value += eased_alpha * (new_value - self.current_value)
+            self.ease_out_progress = 0.0  # Reset ease out progress
         else:
-            # When value is falling, use alpha_falling
-            self.current_value += alpha_falling * (new_value - self.current_value)
+            # When value is falling, use alpha_falling with ease out
+            self.ease_out_progress = min(1.0, self.ease_out_progress + (1 / ease_duration))
+            eased_alpha = alpha_falling * self.ease_out(self.ease_out_progress)
+            self.current_value += eased_alpha * (new_value - self.current_value)
+            self.ease_in_progress = 0.0  # Reset ease in progress
         return self.current_value
-
-# Example usage
-#sensor_data_processor = AsymmetricExponentialSmoothing(alpha_rising=0.8, alpha_falling=0.2)
-
-# In your loop, you would use it like this:
-# sensor_value = get_sensor_value()  # replace this with actual sensor data fetching
-# smoothed_value = sensor_data_processor.smooth(sensor_value)
