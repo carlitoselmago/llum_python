@@ -1,5 +1,5 @@
 from pythonosc import dispatcher, osc_server
-from pyDMXController import pyDMXController
+from pyDMXController.pyDMXController import pyDMXController
 from classes.pyo import Sound
 from classes.webcontrol import WebController
 import numpy as np
@@ -9,6 +9,7 @@ import ctypes
 import sys
 import time
 import random
+import socket
 import logging
 logging.disable(logging.DEBUG)
 
@@ -17,7 +18,7 @@ class dmx_osc:
 
     oscport = 54321
     rangetime=11 #iterations it takes to define the margin of static sensors
-    dmxspeed=0.0005 #speed in seconds for the dmx loop (the lower the faster)
+    dmxspeed=0.00001 #speed in seconds for the dmx loop (the lower the faster)
     movement_threshold=0 # value difference for dinamic sensors
     sound_enabled=True
     
@@ -75,6 +76,9 @@ class dmx_osc:
         self.endminutes=endminutes# the time this code should wait till it starts to a fade out
         self.secondsleft=endminutes*60
 
+        #if self.device_type=="enttec":
+        #    self.dmxspeed=0
+
         if self.sound_enabled: 
             #self.Sound=Sound(self,audiodeviceindex)
             #sound_thread = threading.Thread(target=self.Sound.start)
@@ -97,10 +101,7 @@ class dmx_osc:
         if not skip_intro:
             # INIT SEQUENCE ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             #blackout
-            print("blackout ...")
-            for c in range(1,200):
-                self.dmx.update_channel(c, 0)
-                self.dmx.run(self.dmxspeed)
+            self.blackout()
             time.sleep(18)
             #INIT FOG
             print("INIT fog lights...")
@@ -134,7 +135,7 @@ class dmx_osc:
             for t in reversed(range(1,255)):
                 self.dmx.update_channel(61, t)
                 self.dmx.run(self.dmxspeed)
-                time.sleep(0.08)
+                time.sleep(0.2)
             
         else:
             print("::::::::::::::::::::::::")
@@ -147,9 +148,10 @@ class dmx_osc:
 
         #fadein de dimmer general
         self.global_dimmer=0.0
-        for t in range(0,100):
-            self.global_dimmer=(t/10.0)
-            time.sleep(0.04)
+        for t in range(8,100):
+            self.global_dimmer=(t/100.0)
+            #print("init dimm",self.global_dimmer)
+            time.sleep(0.8)
 
         if self.webcontrol:
             self.WebController=WebController(self)
@@ -171,21 +173,24 @@ class dmx_osc:
             #time.sleep(self.endminutes * 60)
             #END
             print("init fadeout end.....")
-            for t in range(1,255):
-                self.global_dimmer-=0.01
-                if self.global_dimmer<0.1:
+            for t in reversed(range(1,100)):
+                self.global_dimmer=(t/100.0)
+                print("self.global_dimmer",self.global_dimmer)
+                
+                if self.global_dimmer<0.01:
                     break
-                time.sleep(0.08)
+                time.sleep(0.5)
             print("END ::::::::::::::::::::::::::::::::")
             self.stop_flag=True
             
             time.sleep(10) # give 10 extra seconds for enttec faster devices
+            self.blackout()
             #stop all threads
             self.server.shutdown()
             self.OSC_thread.join()
             self.dmx_thread.join()
             
-           
+
             #stop audio
             if self.sound_enabled: 
                 self.close()
@@ -402,7 +407,7 @@ class dmx_osc:
                 self.dmxdata[chan]=value
                 if self.dmx:
                     #print(chan,value)
-                    finalvalue=int( max(min(int(value), 255), 0)*self.global_dimmer )
+                    finalvalue=int( max(min(int(value*self.global_dimmer), 255), 0) )
                     #print("finalvalue",finalvalue)
 
                     #fix for magenta bug on old fixtures
@@ -410,7 +415,7 @@ class dmx_osc:
                         #old ones
                         if finalvalue<25:
                             finalvalue=0   
-                    
+                    #print(chan,finalvalue)       
                     self.dmx.update_channel(chan, finalvalue)
       
             if self.dmx:
@@ -458,3 +463,9 @@ class dmx_osc:
 
         # Clamping the result within the new range
         return min(max(scaled_value, min(new_min, new_max)), max(new_min, new_max))
+    
+    def blackout(self):
+        print("blackout ...")
+        for c in range(1,200):
+            self.dmx.update_channel(c, 0)
+            self.dmx.run(self.dmxspeed)
