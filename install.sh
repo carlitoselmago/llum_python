@@ -8,3 +8,9 @@ cd pyo
 sudo sh scripts/compile_linux_withJack.sh
 #sudo python setup.py install --use-double --use-jack
 pip install -r requirements.txt
+
+
+#raspberry with latest image
+sudo apt update
+sudo apt upgrade
+sudo apt install  pipewire-jack -y
