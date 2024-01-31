@@ -19,7 +19,7 @@ class AsymmetricExponentialSmoothing:
         if new_value > self.current_value:
             # When value is rising, check if delay is needed
             if self.current_value < self.low_threshold and self.delay_counter < self.delay_limit:
-                print("keep it!!")
+                #print("keep it!!")
                 # Increment delay counter and keep current value
                 self.delay_counter += 1
             else:

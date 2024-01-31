@@ -106,29 +106,29 @@ class dmx_osc:
             #INIT FOG
             print("INIT fog lights...")
             #put RGB to full
-            for c in range(62,65):
+            for c in range(82,85):
                 value=255
-                if c==64:
+                if c==84:
                     value=255*0.85
                 #value=int(255*self.channeladjustments[c])
                 #value=255
                 self.dmx.update_channel(c, int(value))
             #animate dimmer
             print("init fog...")
-            self.dmx.update_channel(60, 255)
+            self.dmx.update_channel(80, 255)
             
             self.dmx.run(self.dmxspeed)
             for t in range(1,255):
-                self.dmx.update_channel(61, t)
+                self.dmx.update_channel(81, t)
                 self.dmx.run(self.dmxspeed)
                 time.sleep(0.1)
-            #self.dmx.update_channel(61, 255)
+            #self.dmx.update_channel(81, 255)
             #time.sleep(2)
             
             time.sleep(30)
             print("stop fog...")
             #stop fog
-            self.dmx.update_channel(60, 0)
+            self.dmx.update_channel(80, 0)
             self.dmx.run(self.dmxspeed)
             time.sleep(15)
             print("pause...")
@@ -316,6 +316,8 @@ class dmx_osc:
         #print(value,adress)
         #print("self.margins",self.margins)
         #print("sensorid",sensorid)
+        #if sensorid==10:
+        #    print("sensor10",value)
         if sensorid in self.margins:
             #static sensors
             #print(self.margins[sensorid]["tested"])
@@ -376,10 +378,25 @@ class dmx_osc:
             for pair in self.pairs_audio[sensorid]:
                 dmxrange = pair["range"]
                 pvalue = abs(value)
-                pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
+                
                 #print("audio controller pvalue",pvalue)
+                if sensorid==10:
+                    pvalue=self.scale_single_value(pvalue,self.margins[sensorid]["min"],self.margins[sensorid]["max"],dmxrange[0],dmxrange[1])
+                else:
+                    pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
                 self.sensors_audio_val[pair["control"]]=pvalue
 
+        #substractive
+        """
+        #EXCEPTION, HARDCODED ::::::::::::::::::::::::::
+        #controls general dimmer except for X fixtures
+        if sensorid==11: # should BE 2
+            pvalue = abs(value)
+            pvalue=self.scale_single_value(pvalue, 0.0, 10.0, 0.0, 0.1)
+            self.global_dimmer-=pvalue
+            #print("sensor dimmer",pvalue)
+            #print("global dimmer",self.global_dimmer)
+        """
         #time.sleep(0.001)
                        
     def sendDMXLoop(self):

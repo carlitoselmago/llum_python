@@ -42,7 +42,7 @@ class Sound:
         return self.avg(self.controldata[index])
 
     def start(self,audioback):
-        s = Server(audio=audioback,sr=44100, buffersize=96000)#Server(sr=44100, buffersize=4056)
+        s = Server(audio=audioback,sr=44100, buffersize=106000)#Server(sr=44100, buffersize=4056)
         sleep(5)
         pa_list_devices()
         s.setInOutDevice(self.audiodeviceindex)  # Make sure this device supports stereo
@@ -76,7 +76,7 @@ class Sound:
         #sel.ctrl(title="Filter selector (0=Tone, 1=ButLP, 2=MoogLP)")
         
         rev = Freeverb(butlp, size=1, damp=0.7, bal=0.5).out()
-
+        rev.mul=0.0
         # Volume control
         #vol1 = SigTo(value=0.5, time=0.1, init=0.5)
         #vol2 = SigTo(value=0.5, time=0.1, init=0.5)
@@ -123,24 +123,45 @@ class Sound:
                         freq.value=val#self.freqval
                         """
                         freq.value=self.smoothingFreq.smooth(sensor_val,alpha_rising=0.001, alpha_falling=0.8)
-                        print("processed",freq.value,"\t","\t","raw",sensor_val)
-                   
+                        #print("processed",freq.value,"\t","\t","raw",sensor_val)
+                            
                     if index==1:
-                        pass
+                        
                         #audio1.mul=self.getData(index)
                         #print(val)
                         #filt.freq=sensor_val#self.getData(index)
                         
                         #all2.feedback=self.getData(index)#random.uniform(0.1,1)
                         pass 
+
+                        val=self.getData(index) 
+                        try:
+                            difference=abs(self.controldata[index][-1]-self.controldata[index][-2])
+                            if difference>0.05:
+                                if audio2.mul<0.8:
+                                    audio2.mul+=0.2
+                                    rev.mul-=0.2
+                               
+                            else:
+                                if audio2.mul>0.01:
+                                    audio2.mul-=0.0002
+                                    rev.mul+=0.0002
+                        except:
+                            pass
+                        mini=0.2
+                        if rev.mul<mini:
+                            rev.mul=mini
+                        #print("audio2 vol",audio2.mul,"\t","aduio1 vol",rev.mul)
                     
                     if index==2:
                         val=self.getData(index)  
                         #print(val)
                         #audio2.mul=val
-                        #vol1.value=sensor_val#self.getData(index)
+                        
+                        #rev.mul=sensor_val #val#self.getData(index)
+                        
                         #vol1.value = self.getData(index)#random.uniform(0.9, 1)
-                        pass 
+                        #print("audio1 amb reverb volume",rev.mul)
 
                     if index==3:
                         
@@ -158,9 +179,10 @@ class Sound:
                             pass
                         #if val>0.1:
                         #    sekf.dryverb
-                        #print("reverb bal",val)
+                        
                         #print("self.dryverb",self.dryverb)
                         rev.bal=self.dryverb
+                        #print("reverb bal",rev.bal)
                   
               
                 
