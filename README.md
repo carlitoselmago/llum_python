@@ -9,3 +9,10 @@ git clone https://github.com/belangeo/pyo
 cd  pyo
 
 sudo python setup.py install --use-jack --use-double
+
+#install jack
+git clone https://github.com/jackaudio/jack2.git
+cd jack2
+./waf configure
+./waf
+sudo ./waf install
