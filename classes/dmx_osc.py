@@ -24,7 +24,7 @@ class dmx_osc:
     
     endminutes=4 # the time this code should wait till it starts to a fade out
     global_dimmer=1.0
-    webcontrol=False
+    webcontrol=True
 
     ###################
 
@@ -101,6 +101,10 @@ class dmx_osc:
         self.prepareData()
 
         self.startOSC()
+
+        if self.webcontrol:
+            self.WebController=WebController()
+            
         if not skip_intro:
             # INIT SEQUENCE ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             #blackout
@@ -157,11 +161,7 @@ class dmx_osc:
                 #print("init dimm",self.global_dimmer)
                 time.sleep(0.8)
 
-        if self.webcontrol:
-            self.WebController=WebController(self)
-            self.webcontrolthread = threading.Thread(target=self.WebController.run)
-            self.webcontrolthread.daemon=True
-            self.webcontrolthread.start()
+    
 
         #end timer thread
         self.end()
@@ -348,6 +348,9 @@ class dmx_osc:
         #print("LLLLLLLLLLLLLLLLLLLLLLLL")
         #print("battery",rawvalues[6],"SENSOR:",sensorid)
         #print("LLLLLLLLLLLLLLLLLLLLLLLLLL")
+
+        self.WebController.updatesensor(sensorid,rawvalues[6])
+
         if self.sensor_types[sensorid]=="static":
             value=rawvalues[2]
         else:
