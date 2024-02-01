@@ -24,7 +24,7 @@ class dmx_osc:
     
     endminutes=4 # the time this code should wait till it starts to a fade out
     global_dimmer=1.0
-    webcontrol=True
+    webcontrol=False
 
     ###################
 
@@ -61,7 +61,9 @@ class dmx_osc:
 
     
 
-    def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",margin_padding=0,sensors=[],fixtures=[],pairs={},pairs_audio={},audioback="jack",skip_intro=False,endminutes=15):
+    def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",
+                 margin_padding=0,sensors=[],fixtures=[],pairs={},pairs_audio={},audioback="jack",
+                 skip_intro=False,skip_fadein=False,endminutes=15):
         self.oscport=oscport
         self.oscip=oscip
         self.rangetime=rangetime
@@ -146,12 +148,13 @@ class dmx_osc:
         self.dmx_thread = threading.Thread(target=self.sendDMXLoop)
         self.dmx_thread.start()
 
-        #fadein de dimmer general
-        self.global_dimmer=0.0
-        for t in range(8,100):
-            self.global_dimmer=(t/100.0)
-            #print("init dimm",self.global_dimmer)
-            time.sleep(0.8)
+        if not skip_fadein:
+            #fadein de dimmer general
+            self.global_dimmer=0.0
+            for t in range(8,100):
+                self.global_dimmer=(t/100.0)
+                #print("init dimm",self.global_dimmer)
+                time.sleep(0.8)
 
         if self.webcontrol:
             self.WebController=WebController(self)
@@ -244,16 +247,21 @@ class dmx_osc:
             #print(pair)
             #print("")
             for fixture in pair:
+                
+                #sys.exit()
                 #print(self.fixtures[fixture["fixture"]]["channels"])
                 #print("+++++++++++++++++++++++++++++++++++++++++++")
                 #print("")
-                for dmxchannel in self.fixtures[fixture["fixture"]]["channels"]:
-                    if dmxchannel not in self.dmxchannel_data_chain:
-                        self.dmxchannel_data_chain[dmxchannel]=[]
-                    self.dmxchannel_data_chain[dmxchannel].append({"sensorid":sensorid,"type":self.getSensorType(sensorid)})
-                    self.sensor_val[sensorid]=0#255
-                    self.sensor_last_vals[sensorid]=[0]*self.sensor_last_amount
-        
+                for target in pair:
+                    #print("target",target,type(target["range"]))
+                    sensoriddmxrange=self.list2string(target["range"])
+                    for dmxchannel in self.fixtures[fixture["fixture"]]["channels"]:
+                        if dmxchannel not in self.dmxchannel_data_chain:
+                            self.dmxchannel_data_chain[dmxchannel]=[]
+                        self.dmxchannel_data_chain[dmxchannel].append({"sensorid":sensoriddmxrange,"type":self.getSensorType(sensorid)})
+                        self.sensor_val[sensoriddmxrange]=0#255
+                        self.sensor_last_vals[sensoriddmxrange]=[0]*self.sensor_last_amount
+   
         for sensorid in self.pairs_audio:
             pair=self.pairs_audio[sensorid]
             for controller in pair:
@@ -263,7 +271,7 @@ class dmx_osc:
                 print("")
 
         #print("CREATED dmxchannel_data_chain (DMXchannel-> order of sensors): ")
-        #print(self.dmxchannel_data_chain)
+        print("DMXDATACHAIN",self.dmxchannel_data_chain)
         #print("")
         
     
@@ -349,29 +357,33 @@ class dmx_osc:
                     for pair in self.pairs[sensorid]:
                         #scale data
                         dmxrange=pair["range"]
-                        pvalue=self.scale_single_value(value,self.margins[sensorid]["min"],self.margins[sensorid]["max"],dmxrange[0],dmxrange[1])
-                        self.sensor_last_vals[sensorid].append(self.sensor_val[sensorid])
+                        sensoriddmxrange=self.list2string(dmxrange)
+                        pvalue=self.scale_single_value(value,self.margins[sensorid]["min"],self.margins[sensoriddmxrange]["max"],dmxrange[0],dmxrange[1])
+                        self.sensor_last_vals[sensorid].append(self.sensor_val[sensoriddmxrange])
                         pvalue=abs(0+pvalue)
-                        self.sensor_val[sensorid]=pvalue
+                        self.sensor_val[sensoriddmxrange]=pvalue
                         
         else:
             # Dynamic sensors
             if sensorid in self.pairs:
                 for pair in self.pairs[sensorid]:
                     dmxrange = pair["range"]
+                    sensoriddmxrange=self.list2string(dmxrange)
                     #current_time = time.time()
                     for chan in self.fixtures[pair["fixture"]]["channels"]:
                         pvalue = abs(value)  # in a range from 0 to 50 approx
                         #pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
                         #print("pvalue",pvalue)
-                        if pvalue<self.sensormin[sensorid]:
+                        if pvalue<self.sensormin[sensoriddmxrange]:
                             pvalue=0
                         pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
-                        self.sensor_last_vals[sensorid].append(self.sensor_val[sensorid])
-                        if len(self.sensor_last_vals[sensorid])>self.sensor_last_amount:
-                            self.sensor_last_vals[sensorid].pop(0)
+                        if sensorid==11 and dmxrange==[255,0]:
+                            print("pvalue",pvalue)
+                        self.sensor_last_vals[sensoriddmxrange].append(self.sensor_val[sensoriddmxrange])
+                        if len(self.sensor_last_vals[sensoriddmxrange])>self.sensor_last_amount:
+                            self.sensor_last_vals[sensoriddmxrange].pop(0)
                         #print("din s",pvalue)
-                        self.sensor_val[sensorid]=pvalue
+                        self.sensor_val[sensoriddmxrange]=pvalue
         #audio pairs
         if sensorid in self.pairs_audio:
             
@@ -437,7 +449,8 @@ class dmx_osc:
                         #old ones
                         if finalvalue<25:
                             finalvalue=0   
-                    #print(chan,finalvalue)       
+                    #if chan==8:
+                    #    print("DMXchan and value",chan,finalvalue)       
                     self.dmx.update_channel(chan, finalvalue)
       
             if self.dmx:
@@ -491,3 +504,6 @@ class dmx_osc:
         for c in range(1,200):
             self.dmx.update_channel(c, 0)
             self.dmx.run(self.dmxspeed)
+
+    def list2string(self,l):
+        return ''.join(map(str, l))
