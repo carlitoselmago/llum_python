@@ -1,6 +1,5 @@
 from pythonosc import dispatcher, osc_server
 from pyDMXController import pyDMXController
-from classes.helpers import *
 import threading
 
 from classes.dmx_osc import dmx_osc
@@ -22,18 +21,18 @@ sensors = [
     {"type":"dinamic","id":5}, # CORTINA
 
     #test respuesto
-    {"type":"dinamic","id":11},
-    {"type":"static","id":12}
+    {"type":"dinamic","id":12}
 
 ]
 
 
+#fixtures, key is an unrealted to fixtures or sensors ids, its just for pairs targeting
 fixtures={
     #0:{"channels":list(range(1,56))},#list(range(1,56))
     1:{"channels":[1,2,3,4],"type":"new"},
     2:{"channels":[5,6,7,8],"type":"new"},
     3:{"channels":[9,10,11,12],"type":"new"},
-    4:{"channels":[13,14,15,16],"type":"new"},
+    #4:{"channels":[13,14,15,16],"type":"new"},
 
     5:{"channels":[54,55,56],"type":"old"},
     6:{"channels":[51,52,53],"type":"old"},
@@ -41,7 +40,7 @@ fixtures={
     8:{"channels":[42,43,44],"type":"old"},
     9:{"channels":[45,46,47],"type":"old"},
 
-    10:{"channels":[70,71,72,73],"type":"new"},
+    #10:{"channels":[70,71,72,73],"type":"new"},
     11:{"channels":[20,21,22,23],"type":"new"},
     12:{"channels":[24,25,26,27],"type":"new"},
     13:{"channels":[74,75,76,77],"type":"new"},
@@ -58,13 +57,6 @@ fixtures={
     
     #60:{"channels":[80],"type":"old"},
 }
-
-rangoreposo=[10,60]
-rangoAD=[1000,0]
-rangoADplus=[200,0]
-rangoADplus2=[300,-100]
-negativo=[-1355,0]
-
 adelante=[ #hipersensible
     {"fixture":5,"range":[1455,-100]},
     {"fixture":6,"range":[1455,-100]},
@@ -77,47 +69,38 @@ izq=[#hipersensible
     {"fixture":1,"range":[1455,0]},
     {"fixture":2,"range":[1455,0]},
     {"fixture":3,"range":[1455,0]},
-    {"fixture":4,"range":[1455,0]},
+    #{"fixture":4,"range":[1455,0]},
 ]
 der=[#hipersensible
-    {"fixture":10,"range":[1455,0]},
+   # {"fixture":10,"range":[1455,0]},
     {"fixture":11,"range":[1455,0]},
     {"fixture":12,"range":[1455,0]},
     {"fixture":13,"range":[1455,0]},
 ]
-arriba=[{"fixture":17,"range":rangoAD},
-        {"fixture":14,"range":rangoAD},
-        {"fixture":15,"range":rangoAD},
-        {"fixture":16,"range":rangoAD}
+arriba=[{"fixture":17,"range":[255,-50]},
+        {"fixture":14,"range":[255,-50]},
+        {"fixture":15,"range":[255,-50]},
+        {"fixture":16,"range":[255,-50]}
 ]
 
-abajonegativo=[
-    {"fixture":1,"range":negativo},
-    {"fixture":2,"range":negativo},
-    {"fixture":3,"range":negativo},
-    {"fixture":5,"range":negativo},
-    {"fixture":6,"range":negativo},
-    {"fixture":7,"range":negativo},
-    {"fixture":8,"range":negativo},
-    {"fixture":9,"range":negativo},
-    {"fixture":11,"range":negativo},
-    {"fixture":12,"range":negativo},
-     {"fixture":13,"range":negativo},
-]
 
 # pairs of sensors and fixtures, the key = sensor
-
+rangoreposo=[10,60]
+rangoAD=[100,0]
+rangoADplus=[200,0]
+rangoADplus2=[300,-100]
+negativo=[-255,0]
 
 pairs={
     
     0:izq,
     1:der,
-    2:arriba,
+    12:arriba, #ex 2
     3:adelante,
     4:arriba,
    
     6:[ {"fixture":5,"range":rangoAD},
-        {"fixture":10,"range":rangoAD},
+        #{"fixture":10,"range":rangoAD},
         {"fixture":13,"range":rangoAD} ,
         {"fixture":8,"range":rangoAD} ],
     7:[ {"fixture":9,"range":rangoAD},
@@ -138,9 +121,8 @@ pairs={
         {"fixture":9,"range":rangoADplus2}, 
        {"fixture":11,"range":rangoADplus2} ],
 
-    #11:abajonegativo+arriba
 
-# HACER QUE SENSOR 2 TENG RANGO NEGATIVO PARA QUE RESTE EN LA LINEA
+# HACER QUE SENSOR 2 TENGO RANGO NEGATIVO PARA QUE RESTE EN LA LINEA
 
 
 }
@@ -179,7 +161,7 @@ pairs={
 #pairs of sensors and audio controllers, audio has 0,1,2,3 controllers as targets
 pairs_audio={
     #cortina
-    5:[{"control":0,"range":[10,20000]}],
+    #5:[{"control":0,"range":[10,20000]}],
     
     #repos #TODO check , mateix problema de solapament, deixar 10 si es molt lio
     #7:[{"control":2,"range":[1.0,0.7]}],
@@ -205,7 +187,7 @@ DMXOSC=dmx_osc(oscport=54321,
                #dmxport='/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A50285BI-if00-port0',
                #device_type='ftdi',
                margin_padding=0.2,
-               audiodeviceindex=2,
+               audiodeviceindex=3,
                sensors=sensors,
                fixtures=fixtures,
                pairs=pairs,

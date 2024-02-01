@@ -57,6 +57,8 @@ class Sound:
         audio1 = SfPlayer("audio1.wav", loop=True)
         audio2 = SfPlayer("audio2.wav", loop=True)
 
+        #set audio2 vol at 0?
+
         #audio1=Pan(audio1,2,pan=0)
         audio2=Pan(audio2, 2,pan=1).out()
         
