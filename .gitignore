@@ -11,6 +11,7 @@ sensor_simulator_autosave/
 *.wav
 # C extensions
 *.so
+webserver/*.db
 
 # Distribution / packaging
 .Python
