@@ -204,16 +204,15 @@ class dmx_osc:
         fadeout_thread.start()
 
     def prepareData(self):
+
         for s in self.sensors:
-            if s["type"]=="static":
-                self.margins[s["id"]]={"min":200.0,"max":-200.0,"tested":0}
-                print('self.margins[s["id"]]',self.margins[s["id"]])
-            
-            if "minthreshold" in s:
-                self.sensormin[s["id"]]=s["minthreshold"]
-            else:
-                self.sensormin[s["id"]]=0
             self.sensor_types[s["id"]]=s["type"]
+            pass    
+            #if "minthreshold" in s:
+            #    self.sensormin[s["id"]]=s["minthreshold"]
+            #else:
+            #    self.sensormin[s["id"]]=0
+        #self.sensor_types[s["id"]]=s["type"]
         
         #new fixture white balance for new fixtures
         newWB=[0.34,0.69,0.58,0.27]
@@ -244,6 +243,7 @@ class dmx_osc:
 
         for sensorid in self.pairs:
             pair=self.pairs[sensorid]
+            type=self.getsensor(sensorid)["type"]
             #print(pair)
             #print("")
             for fixture in pair:
@@ -254,7 +254,10 @@ class dmx_osc:
                 #print("")
                 for target in pair:
                     #print("target",target,type(target["range"]))
-                    sensoriddmxrange=self.list2string(target["range"])
+                    sensoriddmxrange=self.rangedID(sensorid,target["range"])
+                    if type=="static":
+                        self.margins[sensoriddmxrange]={"min":200.0,"max":-200.0,"tested":0}
+                        #print('self.margins[s["id"]]',self.margins[s["id"]])
                     for dmxchannel in self.fixtures[fixture["fixture"]]["channels"]:
                         if dmxchannel not in self.dmxchannel_data_chain:
                             self.dmxchannel_data_chain[dmxchannel]=[]
@@ -357,8 +360,8 @@ class dmx_osc:
                     for pair in self.pairs[sensorid]:
                         #scale data
                         dmxrange=pair["range"]
-                        sensoriddmxrange=self.list2string(dmxrange)
-                        pvalue=self.scale_single_value(value,self.margins[sensorid]["min"],self.margins[sensoriddmxrange]["max"],dmxrange[0],dmxrange[1])
+                        sensoriddmxrange=rangedID(sensorid,dmxrange)
+                        pvalue=self.scale_single_value(value,self.margins[sensoriddmxrange]["min"],self.margins[sensoriddmxrange]["max"],dmxrange[0],dmxrange[1])
                         self.sensor_last_vals[sensorid].append(self.sensor_val[sensoriddmxrange])
                         pvalue=abs(0+pvalue)
                         self.sensor_val[sensoriddmxrange]=pvalue
@@ -368,17 +371,17 @@ class dmx_osc:
             if sensorid in self.pairs:
                 for pair in self.pairs[sensorid]:
                     dmxrange = pair["range"]
-                    sensoriddmxrange=self.list2string(dmxrange)
+                    sensoriddmxrange=self.rangedID(sensorid,dmxrange)
                     #current_time = time.time()
                     for chan in self.fixtures[pair["fixture"]]["channels"]:
                         pvalue = abs(value)  # in a range from 0 to 50 approx
                         #pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
                         #print("pvalue",pvalue)
-                        if pvalue<self.sensormin[sensoriddmxrange]:
-                            pvalue=0
+                        #if pvalue<self.sensormin[sensoriddmxrange]:
+                        #    pvalue=0
                         pvalue=self.scale_single_value(pvalue, 0, 10, dmxrange[1], dmxrange[0])
-                        if sensorid==11 and dmxrange==[255,0]:
-                            print("pvalue",pvalue)
+                        #if sensorid==11 and dmxrange==[255,0]:
+                        #    print("pvalue",sensoriddmxrange,pvalue)
                         self.sensor_last_vals[sensoriddmxrange].append(self.sensor_val[sensoriddmxrange])
                         if len(self.sensor_last_vals[sensoriddmxrange])>self.sensor_last_amount:
                             self.sensor_last_vals[sensoriddmxrange].pop(0)
@@ -421,19 +424,25 @@ class dmx_osc:
                 value = 0 # change this to 255 to make it substractive
                 #TODO: improve this, maybe return to the idea of discounting over time
                 for sensor in self.dmxchannel_data_chain[chan]:
+                    
                     if sensor["sensorid"] in self.sensor_val:
+                        
                         if sensor["type"] == "dinamic":
+                            
                             smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]]))
                             value+= smooth_value
+                            print("sensor",sensor,value)
                         else:
                             #fix for magenta bug on old fixtures
                             if (chan>41 and chan <57):
                                 smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]][-3:]))
                                 value+= smooth_value
+                                
                                 #value += self.sensor_val[sensor["sensorid"]]
                             else:
                                 smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]][-8:]))
                                 value+= smooth_value
+                            
                             #print("stattic value",value)
                             #value += self.sensor_val[sensor["sensorid"]]
                 #white balance adjustment
@@ -449,8 +458,8 @@ class dmx_osc:
                         #old ones
                         if finalvalue<25:
                             finalvalue=0   
-                    #if chan==8:
-                    #    print("DMXchan and value",chan,finalvalue)       
+                    if chan==8:
+                        print("DMXchan and value",chan,finalvalue)       
                     self.dmx.update_channel(chan, finalvalue)
       
             if self.dmx:
@@ -505,5 +514,13 @@ class dmx_osc:
             self.dmx.update_channel(c, 0)
             self.dmx.run(self.dmxspeed)
 
+    def rangedID(self,id,l):
+        return str(id)+"_"+self.list2string(l)
+
     def list2string(self,l):
         return ''.join(map(str, l))
+    
+    def getsensor(self,sensorid):
+        for s in self.sensors:
+            if s["id"]==sensorid:
+                return s
