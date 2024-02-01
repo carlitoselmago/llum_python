@@ -4,7 +4,7 @@ from datetime import datetime
 
 class WebController:
     baseurl = "http://llum.htmlfiesta.com/api.php"
-    skiptimes=1000
+    skiptimes=1000000000
     skipcounter={}
 
     def __init__(self):

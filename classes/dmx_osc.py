@@ -24,7 +24,7 @@ class dmx_osc:
     
     endminutes=4 # the time this code should wait till it starts to a fade out
     global_dimmer=1.0
-    webcontrol=True
+    webcontrol=False
 
     ###################
 
@@ -60,6 +60,7 @@ class dmx_osc:
 
     batterylevel={}
 
+    staticsensorsdmxid={}
     
 
     def __init__(self,oscport=54321,oscip="0.0.0.0",rangetime=25,audiodeviceindex=0,dmxport="",device_type="",
@@ -140,7 +141,7 @@ class dmx_osc:
             time.sleep(15)
             print("pause...")
             for t in reversed(range(1,255)):
-                self.dmx.update_channel(61, t)
+                self.dmx.update_channel(81, t)
                 self.dmx.run(self.dmxspeed)
                 time.sleep(0.2)
             
@@ -250,6 +251,7 @@ class dmx_osc:
 
         for sensorid in self.pairs:
             pair=self.pairs[sensorid]
+            print("self.getsensor(sensorid)",self.getsensor(sensorid))
             type=self.getsensor(sensorid)["type"]
             #print(pair)
             #print("")
@@ -258,23 +260,29 @@ class dmx_osc:
             for f in self.fixtures:
                 for channel in self.fixtures[f]["channels"]:
                     #first create the entry for the channel
+                    #print("channel",channel)
                     self.dmxchannel_data_chain[channel]=[]
 
                     for sensorid in self.pairs:
                         type=self.getSensorType(sensorid)
                         for pair in self.pairs[sensorid]:
                             sensoriddmxrange=self.rangedID(sensorid,pair["range"])
+                            #print("sensoriddmxrange",sensoriddmxrange)
                             fixture=pair["fixture"]
                             if fixture == f:
-                                if not self.sensoriddmxrange_in_dmxdatachain(sensoriddmxrange):
+                                    
+                                #if not self.sensoriddmxrange_in_dmxdatachain(sensoriddmxrange):
+                                    #print("type",type)
                                     if type=="static":
+                                        #print("SET MARGIN FOR ",sensorid)
                                         self.margins[sensoriddmxrange]={"min":200.0,"max":-200.0,"tested":0}
+                                        self.staticsensorsdmxid[sensorid]=sensoriddmxrange
                                     self.sensor_val[sensoriddmxrange]=0#255
                                     self.sensor_last_vals[sensoriddmxrange]=[0]*self.sensor_last_amount
                                     self.dmxchannel_data_chain[channel].append({"sensorid":sensoriddmxrange,"type":type})
 
 
-
+            
             """
             for fixture in pair:
                 
@@ -296,7 +304,9 @@ class dmx_osc:
                         self.sensor_val[sensoriddmxrange]=0#255
                         self.sensor_last_vals[sensoriddmxrange]=[0]*self.sensor_last_amount
             """
-   
+        print("self.margins",self.margins)
+        print("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
+        print()
         for sensorid in self.pairs_audio:
             pair=self.pairs_audio[sensorid]
             for controller in pair:
@@ -306,7 +316,7 @@ class dmx_osc:
                 print("")
 
         #print("CREATED dmxchannel_data_chain (DMXchannel-> order of sensors): ")
-        print("DMXDATACHAIN",self.dmxchannel_data_chain)
+        #print("DMXDATACHAIN",self.dmxchannel_data_chain)
         #print("")
         
     
@@ -348,8 +358,8 @@ class dmx_osc:
         #print("LLLLLLLLLLLLLLLLLLLLLLLL")
         #print("battery",rawvalues[6],"SENSOR:",sensorid)
         #print("LLLLLLLLLLLLLLLLLLLLLLLLLL")
-
-        self.WebController.updatesensor(sensorid,rawvalues[6])
+        if self.webcontrol:
+            self.WebController.updatesensor(sensorid,rawvalues[6])
 
         if self.sensor_types[sensorid]=="static":
             value=rawvalues[2]
@@ -360,25 +370,31 @@ class dmx_osc:
             value=np.average(rawvalues[3:5]).item()
             #print("board"+str(sensorid),"value",value)
         #print(value,adress)
-        #print("self.margins",self.margins)
+        
         #print("sensorid",sensorid)
         #if sensorid==10:
         #    print("sensor10",value)
-        if sensorid in self.margins:
+        if sensorid in self.staticsensorsdmxid:
             #static sensors
-            #print(self.margins[sensorid]["tested"])
-            if self.margins[sensorid]["tested"]<self.rangetime:
-                if value<self.margins[sensorid]["min"]:
-                    self.margins[sensorid]["min"]=value
-                if value>self.margins[sensorid]["max"]:
-                    self.margins[sensorid]["max"]=value
-                self.margins[sensorid]["tested"]+=1
-            elif self.margins[sensorid]["tested"]==self.rangetime:
-                self.margins[sensorid]["min"]=self.margins[sensorid]["min"]-self.margin_padding
-                self.margins[sensorid]["max"]=self.margins[sensorid]["max"]+self.margin_padding
-                self.margins[sensorid]["tested"]+=1
-                print("margins set for sensor",sensorid,self.margins[sensorid])
-                self.batterylevel[sensorid]=rawvalues[6]
+
+            sensorid_DMX=self.staticsensorsdmxid[sensorid]
+            #print("self.margins",self.margins)
+            #print(self.margins[sensorid_DMX]["tested"])
+            if self.margins[sensorid_DMX]["tested"]<self.rangetime:
+                if value<self.margins[sensorid_DMX]["min"]:
+                    self.margins[sensorid_DMX]["min"]=value
+                if value>self.margins[sensorid_DMX]["max"]:
+                    self.margins[sensorid_DMX]["max"]=value
+                self.margins[sensorid_DMX]["tested"]+=1
+            elif self.margins[sensorid_DMX]["tested"]==self.rangetime:
+                self.margins[sensorid_DMX]["min"]=self.margins[sensorid_DMX]["min"]-self.margin_padding
+                self.margins[sensorid_DMX]["max"]=self.margins[sensorid_DMX]["max"]+self.margin_padding
+                self.margins[sensorid_DMX]["tested"]+=1
+                print("OOOOOOOOOOOOOOOOOOOOOO")
+                print("margins set for sensor",sensorid,self.margins[sensorid_DMX])
+                print("OOOOOOOOOOOOOOOOOOOOOO")
+
+                self.batterylevel[sensorid_DMX]=rawvalues[6]
                 
                     
                 if len(self.batterylevel)==len(self.sensors):
@@ -395,12 +411,12 @@ class dmx_osc:
                     for pair in self.pairs[sensorid]:
                         #scale data
                         dmxrange=pair["range"]
-                        sensoriddmxrange=rangedID(sensorid,dmxrange)
-                        pvalue=self.scale_single_value(value,self.margins[sensoriddmxrange]["min"],self.margins[sensoriddmxrange]["max"],dmxrange[0],dmxrange[1])
-                        self.sensor_last_vals[sensorid].append(self.sensor_val[sensoriddmxrange])
+                        sensoriddmxrange=self.rangedID(sensorid,dmxrange)
+                        pvalue=self.scale_single_value(value,self.margins[sensorid_DMX]["min"],self.margins[sensorid_DMX]["max"],dmxrange[0],dmxrange[1])
+                        self.sensor_last_vals[sensoriddmxrange].append(self.sensor_val[sensoriddmxrange])
                         pvalue=abs(0+pvalue)
                         self.sensor_val[sensoriddmxrange]=pvalue
-                        
+                        #print("pvalue",pvalue)
         else:
             # Dynamic sensors
             if sensorid in self.pairs:
@@ -494,7 +510,7 @@ class dmx_osc:
                         if finalvalue<25:
                             finalvalue=0   
                     #if chan==8:
-                    #    print("DMXchan and value",chan,finalvalue)       
+                    #print("DMXchan and value",chan,finalvalue)       
                     self.dmx.update_channel(chan, finalvalue)
       
             if self.dmx:
