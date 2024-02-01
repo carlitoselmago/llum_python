@@ -1,20 +1,22 @@
 <?php
-// api.php
+$dbFile = 'llum.db';
+$db = new SQLite3($dbFile);
 
-// Check if there are GET parameters
-if (!empty($_GET)) {
-    // Define the path to the JSON file
-    $jsonFilePath = 'data.json';
+// Check if the required GET parameters are present
+if (isset($_GET['sensor']) && isset($_GET['lastupdate']) && isset($_GET['battery'])) {
+    $sensorId = (int)$_GET['sensor'];
+    $lastUpdate = SQLite3::escapeString($_GET['lastupdate']);
+    $battery=(float)$_GET['battery'];
+    // Prepare the update query
+    $query = "UPDATE sensors SET lastupdate = '$lastUpdate', battery='$battery'  WHERE id = $sensorId";
 
-    // Read the existing data from the file
-    $data = file_exists($jsonFilePath) ? json_decode(file_get_contents($jsonFilePath), true) : [];
-
-    // Merge new data with existing data
-    $data = array_merge($data, $_GET);
-
-    // Save the merged data back to the file
-    file_put_contents($jsonFilePath, json_encode($data));
+    // Execute the update
+    if ($db->exec($query)) {
+        echo "Sensor data updated successfully.";
+    } else {
+        echo "Error updating sensor data.";
+    }
+} else {
+    echo "Missing required parameters.";
 }
-
-echo "Data received and stored.";
 ?>

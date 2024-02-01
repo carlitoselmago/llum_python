@@ -1,0 +1,22 @@
+body{
+    background-color: black;
+    color:white;
+    font-family:'Courier New', Courier, monospace;
+}
+.timedout{
+    color:red;
+}
+.recharge{
+    color:red;
+    animation: blinker 1s linear infinite;
+    
+}
+
+
+
+  
+  @keyframes blinker {
+    50% {
+      opacity: 0.5;
+    }
+  }
