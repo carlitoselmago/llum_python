@@ -4,7 +4,7 @@ from datetime import datetime
 
 class WebController:
     baseurl = "http://llum.htmlfiesta.com/api.php"
-    skiptimes=300
+    skiptimes=1000
     skipcounter={}
 
     def __init__(self):
@@ -38,7 +38,7 @@ class WebController:
             # Check if the request was successful
             if response.status_code == 200:
                 pass
-                print(f"Success: {response.text}")
+                #print(f"Success: {response.text}")
             else:
                 print(f"Error: Received response code {response.status_code}")
         except requests.exceptions.RequestException as e:
