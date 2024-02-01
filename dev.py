@@ -27,7 +27,7 @@ pairs={
    
     11:[
         {"fixture":1,"range":[-355,0]},
-         {"fixture":2,"range":[255,0]} ], #substractive
+        {"fixture":2,"range":[255,0]} ], #substractive
     
     
 }

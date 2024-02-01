@@ -46,6 +46,7 @@ class dmx_osc:
     dmxdata={}
     dmxchannel_data_chain={}
     channeladjustments={}
+    allchannels=[]
 
     sensors_audio_val={}
     sensormin={} #minimum value to be read
@@ -205,6 +206,12 @@ class dmx_osc:
 
     def prepareData(self):
 
+        #store all dmx channels for easy access
+        for id in self.fixtures:
+            for chan in self.fixtures[id]["channels"]:
+                if chan not in self.allchannels:
+                    self.allchannels.append(chan)
+
         for s in self.sensors:
             self.sensor_types[s["id"]]=s["type"]
             pass    
@@ -246,6 +253,29 @@ class dmx_osc:
             type=self.getsensor(sensorid)["type"]
             #print(pair)
             #print("")
+
+            #prepare DMXdatachain per DMX channel
+            for f in self.fixtures:
+                for channel in self.fixtures[f]["channels"]:
+                    #first create the entry for the channel
+                    self.dmxchannel_data_chain[channel]=[]
+
+                    for sensorid in self.pairs:
+                        type=self.getSensorType(sensorid)
+                        for pair in self.pairs[sensorid]:
+                            sensoriddmxrange=self.rangedID(sensorid,pair["range"])
+                            fixture=pair["fixture"]
+                            if fixture == f:
+                                if not self.sensoriddmxrange_in_dmxdatachain(sensoriddmxrange):
+                                    if type=="static":
+                                        self.margins[sensoriddmxrange]={"min":200.0,"max":-200.0,"tested":0}
+                                    self.sensor_val[sensoriddmxrange]=0#255
+                                    self.sensor_last_vals[sensoriddmxrange]=[0]*self.sensor_last_amount
+                                    self.dmxchannel_data_chain[channel].append({"sensorid":sensoriddmxrange,"type":type})
+
+
+
+            """
             for fixture in pair:
                 
                 #sys.exit()
@@ -255,6 +285,7 @@ class dmx_osc:
                 for target in pair:
                     #print("target",target,type(target["range"]))
                     sensoriddmxrange=self.rangedID(sensorid,target["range"])
+                    #if sensoriddmxrange not in self.sensor_last_vals:
                     if type=="static":
                         self.margins[sensoriddmxrange]={"min":200.0,"max":-200.0,"tested":0}
                         #print('self.margins[s["id"]]',self.margins[s["id"]])
@@ -264,6 +295,7 @@ class dmx_osc:
                         self.dmxchannel_data_chain[dmxchannel].append({"sensorid":sensoriddmxrange,"type":self.getSensorType(sensorid)})
                         self.sensor_val[sensoriddmxrange]=0#255
                         self.sensor_last_vals[sensoriddmxrange]=[0]*self.sensor_last_amount
+            """
    
         for sensorid in self.pairs_audio:
             pair=self.pairs_audio[sensorid]
@@ -431,7 +463,7 @@ class dmx_osc:
                             
                             smooth_value=float(np.average(self.sensor_last_vals[sensor["sensorid"]]))
                             value+= smooth_value
-                            print("sensor",sensor,value)
+                            #print("sensor",sensor,value)
                         else:
                             #fix for magenta bug on old fixtures
                             if (chan>41 and chan <57):
@@ -458,8 +490,8 @@ class dmx_osc:
                         #old ones
                         if finalvalue<25:
                             finalvalue=0   
-                    if chan==8:
-                        print("DMXchan and value",chan,finalvalue)       
+                    #if chan==8:
+                    #    print("DMXchan and value",chan,finalvalue)       
                     self.dmx.update_channel(chan, finalvalue)
       
             if self.dmx:
@@ -524,3 +556,10 @@ class dmx_osc:
         for s in self.sensors:
             if s["id"]==sensorid:
                 return s
+            
+    def sensoriddmxrange_in_dmxdatachain(self,id):
+        for chan in self.allchannels:
+            for dc in self.dmxchannel_data_chain[chan]:
+                if dc["sensorid"]==id:
+                    return True 
+            return False
