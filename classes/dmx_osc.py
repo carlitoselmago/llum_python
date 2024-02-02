@@ -155,7 +155,7 @@ class dmx_osc:
         if not skip_fadein:
             #fadein de dimmer general
             self.global_dimmer=0.0
-            for t in range(8,100):
+            for t in range(8,110):
                 self.global_dimmer=(t/100.0)
                 #print("init dimm",self.global_dimmer)
                 time.sleep(0.8)
