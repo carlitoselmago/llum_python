@@ -1,6 +1,7 @@
 from pythonosc import dispatcher, osc_server
 from pyDMXController import pyDMXController
 import threading
+import os
 
 from classes.dmx_osc import dmx_osc
 
@@ -180,10 +181,15 @@ pairs_audio={
     4:[{"control":3,"range":[1,0.1]}] 
 }
 
+
+dmxport=""
+if os.name == 'nt':
+    dmxport="COM3"
+
 DMXOSC=dmx_osc(oscport=54321,
             oscip="172.25.7.255",
                dmxport='/dev/ttyUSB0',
-               device_type='enttec',
+               device_type=dmxport,
                #dmxport='/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A50285BI-if00-port0',
                #device_type='ftdi',
                margin_padding=0.2,
