@@ -182,14 +182,14 @@ pairs_audio={
 }
 
 
-dmxport=""
+dmxport='/dev/ttyUSB0'
 if os.name == 'nt':
     dmxport="COM3"
 
 DMXOSC=dmx_osc(oscport=54321,
             oscip="172.25.7.255",
-               dmxport='/dev/ttyUSB0',
-               device_type=dmxport,
+               dmxport=dmxport,
+               device_type='enttec',
                #dmxport='/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A50285BI-if00-port0',
                #device_type='ftdi',
                margin_padding=0.2,

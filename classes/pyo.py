@@ -46,7 +46,7 @@ class Sound:
         if os.name == 'nt':
             s = Server(buffersize=1024, duplex=0, winhost="asio")
         else:
-            s = Server(audio=audioback,sr=44100, buffersize=106000)#Server(sr=44100, buffersize=4056)
+            s = Server(audio=audioback,sr=44100, buffersize=4056)#106000#Server(sr=44100, buffersize=4056)
         
         sleep(5)
         pa_list_devices()
