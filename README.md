@@ -20,3 +20,6 @@ pip install pyserial
 conda install -c conda-forge gcc=12.1.0
 pip install --user pyo
 ```
+### Windos config
+Server(buffersize=1024, duplex=0, winhost="asio") 
+https://belangeo.github.io/pyo/winaudioinspect.html
