@@ -73,8 +73,10 @@ class dmx_osc:
         self.fixtures=fixtures 
         self.pairs=pairs 
         self.pairs_audio=pairs_audio
-        self.endminutes=endminutes# the time this code should wait till it starts to a fade out
+        self.endminutes=endminutes*60# the time this code should wait till it starts to a fade out
         self.secondsleft=endminutes*60
+
+        print("END MINUTES:",self.endminutes)
 
         #if self.device_type=="enttec":
         #    self.dmxspeed=0
@@ -161,18 +163,21 @@ class dmx_osc:
             self.webcontrolthread.start()
 
         #end timer thread
+        print("NOW END THREAD IS LAUNCHED")
         self.end()
         
     def end(self):
         
         def thread_function():
-            while self.secondsleft > 0:
-                self.secondsleft-=1
-                time.sleep(1)
+            #while self.secondsleft > 0:
+            #    self.secondsleft-=1
+            #    time.sleep(1)
             #for second in self.endminutes * 60:
-                time.sleep(1) 
+            #    time.sleep(1) 
             #time.sleep(self.endminutes * 60)
             #END
+            #time.sleep(self.endminutes)
+            self.pause(self.endminutes)
             print("init fadeout end.....")
             for t in reversed(range(1,100)):
                 self.global_dimmer=(t/100.0)
@@ -492,3 +497,7 @@ class dmx_osc:
         for c in range(1,200):
             self.dmx.update_channel(c, 0)
             self.dmx.run(self.dmxspeed)
+
+    def pause(self,secs):
+        init_time = time.time()
+        while time.time() < init_time+secs: pass

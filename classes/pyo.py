@@ -54,8 +54,8 @@ class Sound:
         
 
         # Load audio files
-        audio1 = SfPlayer("audio1.wav", loop=True)
-        audio2 = SfPlayer("audio2.wav", loop=True)
+        audio1 = SfPlayer("audio1.wav", loop=False)
+        audio2 = SfPlayer("audio2.wav", loop=False)
 
         #set audio2 vol at 0?
 

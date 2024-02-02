@@ -95,7 +95,7 @@ pairs={
     
     0:izq,
     1:der,
-    12:arriba, #ex 2
+    2:arriba,
     3:adelante,
     4:arriba,
    
@@ -195,6 +195,6 @@ DMXOSC=dmx_osc(oscport=54321,
                audioback="jack",
                skip_intro=False,
                skip_fadein=False,
-               endminutes=10)
+               endminutes=4) #4?
 
 #################################################################################
