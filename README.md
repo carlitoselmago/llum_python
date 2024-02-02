@@ -9,3 +9,14 @@ git clone https://github.com/belangeo/pyo
 cd  pyo
 
 sudo python setup.py install --use-jack --use-double
+
+-----
+
+### fedora install
+I recommend using conda:
+```
+sudo yum install python-devel
+pip install pyserial
+conda install -c conda-forge gcc=12.1.0
+pip install --user pyo
+```
