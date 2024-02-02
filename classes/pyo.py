@@ -5,6 +5,7 @@ import numpy as np
 from time import sleep
 import sys
 import threading
+import os
 from classes.smoothing import AsymmetricExponentialSmoothing
 
 class Sound:
@@ -42,7 +43,11 @@ class Sound:
         return self.avg(self.controldata[index])
 
     def start(self,audioback):
-        s = Server(audio=audioback,sr=44100, buffersize=106000)#Server(sr=44100, buffersize=4056)
+        if os.name == 'nt':
+            s = Server(buffersize=1024, duplex=0, winhost="asio")
+        else:
+            s = Server(audio=audioback,sr=44100, buffersize=106000)#Server(sr=44100, buffersize=4056)
+        
         sleep(5)
         pa_list_devices()
         s.setInOutDevice(self.audiodeviceindex)  # Make sure this device supports stereo
